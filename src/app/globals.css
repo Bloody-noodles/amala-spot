@@ -57,3 +57,12 @@ h1 em,h2 em{font-family:var(--serif);font-weight:500;letter-spacing:-.07em}
 .menu-item{display:inline}.menu-item i{font-style:normal;opacity:.55}
 @keyframes entry-progress{to{transform:scaleX(1)}}@keyframes entry-curtain{0%,65%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}@keyframes site-content-arrive{0%{opacity:.2;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.entry-screen{display:none}.site-shell.is-entering main{animation:none}}
+
+/* Signature first-visit entry sequence */
+.site-shell.is-entering main{animation:site-content-arrive 1.55s cubic-bezier(.2,.75,.25,1) both}
+.entry-screen{position:fixed;inset:0;z-index:1000;background:var(--red);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;animation:entry-curtain 1.55s cubic-bezier(.76,0,.24,1) forwards;pointer-events:none}
+.entry-mark{font:900 clamp(42px,8vw,82px)/.9 var(--sans);letter-spacing:-.095em}.entry-mark span{color:var(--cream)}.entry-mark i{font:11px var(--mono);vertical-align:top;margin-left:5px}
+.entry-screen p{font:9px var(--mono);letter-spacing:.18em}.entry-rule{width:min(180px,45vw);height:2px;background:rgba(255,255,255,.25);overflow:hidden}.entry-rule span{display:block;width:100%;height:100%;background:#fff;transform:scaleX(0);transform-origin:left;animation:entry-progress 1.05s .12s ease forwards}
+.menu-item{display:inline}.menu-item i{font-style:normal;opacity:.55}
+@keyframes entry-progress{to{transform:scaleX(1)}}@keyframes entry-curtain{0%,65%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}@keyframes site-content-arrive{0%{opacity:.2;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.entry-screen{display:none}.site-shell.is-entering main{animation:none}}
