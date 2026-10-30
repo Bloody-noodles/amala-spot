@@ -34,15 +34,17 @@ export async function POST(request: Request) {
       lines.push({itemId:item.id,name:item.name,quantity:line.quantity,unitKobo,options:options.map(option=>({id:option!.id,label:option!.label,priceKobo:option!.priceKobo}))});
     }
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+    const legacyServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const serverKey = supabaseSecretKey || legacyServiceRoleKey;
 
-    if (supabaseUrl && serviceRoleKey) {
+    if (supabaseUrl && serverKey) {
       const databaseResponse = await fetch(`${(supabaseUrl.endsWith("/") ? supabaseUrl.slice(0, -1) : supabaseUrl)}/rest/v1/rpc/create_customer_order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`
+          apikey: serverKey,
+          ...(supabaseSecretKey ? {} : { Authorization: `Bearer ${serverKey}` })
         },
         body: JSON.stringify({ payload: parsed.data }),
         cache: "no-store"
