@@ -7,8 +7,8 @@ export async function GET(request:NextRequest){
  try{
   const [c,i,o]=await Promise.all([db("menu_categories?select=id,name,sort_order,is_active&order=sort_order.asc"),db("menu_items?select=id,category_id,name,description,price_kobo,is_available&order=name.asc"),db("menu_item_options?select=id,menu_item_id,label,price_kobo,is_available&order=label.asc")]);
   if(!c.ok||!i.ok||!o.ok)throw new Error("Menu query failed");
-  const [categories,items,options]=await Promise.all([c.json(),i.json(),o.json()]);
-  return NextResponse.json({categories,items:items.map((item:any)=>({...item,price_kobo:Number(item.price_kobo),options:options.filter((x:any)=>x.menu_item_id===item.id).map((x:any)=>({...x,price_kobo:Number(x.price_kobo)}))}))});
+  const [categories,items,options]=await Promise.all([c.json(),i.json(),o.json()]) as [unknown, Array<{id:string;price_kobo:number}>, Array<{menu_item_id:string;price_kobo:number}>];
+  return NextResponse.json({categories,items:items.map((item)=>({...item,price_kobo:Number(item.price_kobo),options:options.filter((x)=>x.menu_item_id===item.id).map((x)=>({...x,price_kobo:Number(x.price_kobo)}))}))});
  }catch{return NextResponse.json({error:"Could not load menu data."},{status:503});}
 }
 export async function POST(request:NextRequest){
@@ -32,7 +32,7 @@ export async function POST(request:NextRequest){
    if(!/^[a-z0-9-]{1,50}$/.test(oid)||seen.has(oid)||label.length<1||label.length>80||!Number.isSafeInteger(price)||price<0)return NextResponse.json({error:"One or more extras have invalid or duplicate details."},{status:400});
    seen.add(oid);
   }
-  const payload={id,category_id,name,description,price_kobo,is_available:body.is_available!==false,options:options.map((x:any)=>({id:String(x.id).trim(),label:String(x.label).trim(),price_kobo:Number(x.price_kobo),is_available:x.is_available!==false}))};
+  const payload={id,category_id,name,description,price_kobo,is_available:body.is_available!==false,options:options.map((x: {id:string;label:string;price_kobo:number;is_available?:boolean})=>({id:String(x.id).trim(),label:String(x.label).trim(),price_kobo:Number(x.price_kobo),is_available:x.is_available!==false}))};
   const r=await db("rpc/create_admin_menu_item",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p_payload:payload})});
   if(!r.ok){
    const detail=await r.text();
