@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (supabaseUrl && serviceRoleKey) {
-      const databaseResponse = await fetch(`${supabaseUrl.replace(/\\/$/, "")}/rest/v1/rpc/create_customer_order`, {
+      const databaseResponse = await fetch(`${(supabaseUrl.endsWith("/") ? supabaseUrl.slice(0, -1) : supabaseUrl)}/rest/v1/rpc/create_customer_order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
