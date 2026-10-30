@@ -31,7 +31,7 @@ export function isAdminRequest(request: NextRequest) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 export function adminCookieOptions() {
-  return { name: COOKIE_NAME, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" as const, path: "/admin", maxAge: SESSION_SECONDS };
+  return { name: COOKIE_NAME, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" as const, path: "/", maxAge: SESSION_SECONDS };
 }
 export function checkAdminPassword(candidate: string) {
   const expected = process.env.ADMIN_PASSWORD || "";
