@@ -18,9 +18,6 @@ declare
   v_item public.menu_items%rowtype;
   v_options jsonb := coalesce(p_payload->'options','[]'::jsonb);
 begin
-  if v_id !~ '^[a-z0-9-]{2,60}$' or v_name not between '' and '' then
-    null;
-  end if;
   if v_id !~ '^[a-z0-9-]{2,60}$' or length(v_name) not between 2 and 100
      or length(v_description) > 500
      or coalesce(p_payload->>'price_kobo','') !~ '^[0-9]{1,12}$'
