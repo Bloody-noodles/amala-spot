@@ -12,21 +12,31 @@ const money = (kobo: number) => new Intl.NumberFormat("en-NG", { style: "currenc
 const date = (value: string) => new Intl.DateTimeFormat("en-NG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 
 export default function TrackOrderPage() {
-  const [reference, setReference] = useState("");
   const [trackingKey, setTrackingKey] = useState("");
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function lookup(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setError(""); setOrder(null); setBusy(true);
+    event.preventDefault();
+    setError("");
+    setOrder(null);
+    setBusy(true);
     try {
-      const response = await fetch("/api/orders/track", { method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", body: JSON.stringify({ reference, trackingKey }) });
+      const response = await fetch("/api/orders/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ trackingKey: trackingKey.trim() })
+      });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Unable to find this order.");
       setOrder(data.order);
-    } catch (e) { setError(e instanceof Error ? e.message : "Please try again."); }
-    finally { setBusy(false); }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   const currentIndex = order ? stages.indexOf(order.status) : -1;
@@ -35,9 +45,8 @@ export default function TrackOrderPage() {
     <section className="tracking-main">
       <span className="eyebrow">ORDER LOOKUP · PRIVATE ACCESS</span>
       <h1>YOUR ORDER.<br/><em>IN THE KNOW.</em></h1>
-      <p className="tracking-intro">Enter the reference and private tracking key shown on your order receipt to view its latest status.</p>
+      <p className="tracking-intro">Enter the private tracking key from your order receipt. Your order reference is not required.</p>
       <form className="tracking-form" onSubmit={lookup}>
-        <label>ORDER REFERENCE<input value={reference} onChange={e=>setReference(e.target.value.toUpperCase())} placeholder="AS-XXXXXXXXXX" autoComplete="off" required/></label>
         <label>PRIVATE TRACKING KEY<input value={trackingKey} onChange={e=>setTrackingKey(e.target.value.trim())} placeholder="Paste your 64-character key" autoComplete="off" minLength={64} maxLength={64} required/></label>
         <button type="submit" disabled={busy}><Search size={16}/>{busy ? "CHECKING…" : "FIND MY ORDER"}</button>
         {error && <p className="tracking-error" role="alert">{error}</p>}
@@ -50,7 +59,7 @@ export default function TrackOrderPage() {
         <div className="tracking-events"><span className="eyebrow">UPDATE HISTORY</span>{order.events.map((item,index)=><article key={index}><Clock3 size={14}/><div><b>{labels[item.status] || item.status}</b><small>{date(item.created_at)}</small>{item.note&&<p>{item.note}</p>}</div></article>)}</div>
         <p className="tracking-refresh">Status is checked when you look up the order. Refresh this page and search again for the latest update.</p>
       </section>}
-      <div className="tracking-security"><ShieldCheck size={17}/><p>Your tracking key is private. Anyone with both the order reference and key can view its status, so keep the key to yourself.</p></div>
+      <div className="tracking-security"><ShieldCheck size={17}/><p>Your tracking key is private. Anyone with this key can view the associated order, so keep it to yourself.</p></div>
       <p className="tracking-disclaimer">Independent portfolio concept. Orders are stored in a demonstration database and are not sent to a real restaurant, paid for, or fulfilled.</p>
     </section>
   </main>;
