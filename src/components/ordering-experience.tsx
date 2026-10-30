@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Minus, Plus, Search, ShoppingBag, X, CheckCircle2, ArrowRight } from "lucide-react";
 import { formatNaira, menuItems } from "@/lib/menu";
+import { FoodAssistant } from "@/components/food-assistant";
 
 type CartLine = { key:string; itemId:string; quantity:number; options:string[] };
 type Receipt = { reference:string; totalKobo:number; message:string; mode?:"saved"|"demo" };
@@ -31,6 +32,7 @@ export function OrderingExperience() {
   const updateQty=(key:string,delta:number)=>setCart(current=>current.map(line=>line.key===key?{...line,quantity:line.quantity+delta}:line).filter(line=>line.quantity>0));
   const submit=async()=>{setError("");if(!customer.name.trim()||!customer.phone.trim()){setError("Please enter your name and phone number.");return;}if(!cart.length){setError("Your basket is empty.");return;}setBusy(true);try{const response=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customer,items:cart.map(({itemId,quantity,options})=>({itemId,quantity,options}))})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Could not prepare the demo order.");setReceipt(data);setCart([]);setCheckout(false);setShowCart(false);}catch(e){setError(e instanceof Error?e.message:"Something went wrong. Please try again.");}finally{setBusy(false);}};
   const naira=(value:number)=>formatNaira(value);
+  const addAssistantItem=(itemId:string,amount:number)=>{const item=menuItems.find(entry=>entry.id===itemId);if(!item)return;const key=`${item.id}:`;setCart(current=>{const found=current.find(line=>line.key===key);return found?current.map(line=>line.key===key?{...line,quantity:line.quantity+amount}:line):[...current,{key,itemId:item.id,quantity:amount,options:[]}]});setShowCart(true);};
 
   return <section className="ordering-experience" id="order-builder">
     <div className="ordering-top"><div><span className="eyebrow">BUILD YOUR ORDER · DEMO MENU</span><h3>WHAT ARE WE<br/><em>HAVING TODAY?</em></h3><p>Choose a dish, make it yours, then review your basket.</p></div><button className="basket-trigger" onClick={()=>setShowCart(v=>!v)}><ShoppingBag size={18}/> YOUR BASKET <b>{cartCount}</b></button></div>
@@ -47,5 +49,6 @@ export function OrderingExperience() {
 
     {receipt&&<div className="order-modal-backdrop"><section className="order-modal receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><CheckCircle2 className="receipt-check"/><span className="eyebrow">{receipt.mode==="saved"?"ORDER RECORD CREATED":"DEMO ORDER SUMMARY"}</span><h3 id="receipt-title">{receipt.mode==="saved"?"ORDER<br/>RECORDED.":"ALL PUT<br/>TOGETHER."}</h3><p className="receipt-reference">REFERENCE · {receipt.reference}</p><strong className="receipt-total">{naira(receipt.totalKobo)}</strong><p>{receipt.message}</p><button className="checkout-button" onClick={()=>setReceipt(null)}>BACK TO MENU</button></section></div>}
     <p className="ordering-footnote">Independent concept experience. Prices are fictional sample values for interface testing, not verified restaurant prices.</p>
+    <FoodAssistant onAddItem={addAssistantItem}/>
   </section>;
 }
