@@ -72,3 +72,20 @@ h1 em,h2 em{font-family:var(--serif);font-weight:500;letter-spacing:-.07em}
 .dish-card{min-width:0}
 .dish-image img{background:#d8c9b8}
 @media(max-width:640px){.image-credit{font-size:8px}.dish-image{height:clamp(280px,95vw,420px)}.menu-row p{line-height:1.8}.menu-row .menu-item{overflow-wrap:anywhere}}
+
+/* Nigerian food gallery */
+.food-gallery{background:#e9e2d6}
+.food-gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 18px}
+.food-tile{min-width:0}
+.food-tile:nth-child(2),.food-tile:nth-child(6){margin-top:48px}
+.food-tile-image{position:relative;display:block;aspect-ratio:4/5;overflow:hidden;background:#d4c6b5}
+.food-tile-image img{object-fit:cover;transition:transform .65s cubic-bezier(.2,.7,.2,1)}
+.food-tile-image:hover img{transform:scale(1.055)}
+.food-tile-number,.food-tile-open{position:absolute;top:12px;background:var(--cream);padding:8px 10px;font:9px var(--mono);letter-spacing:.05em}
+.food-tile-number{left:12px}.food-tile-open{right:12px}
+.food-tile-copy{padding-top:13px}
+.food-tile-copy h3{font-size:16px;letter-spacing:-.04em;margin:0 0 5px}
+.food-tile-copy p{font:13px/1.45 var(--serif);margin:0;min-height:38px}
+.food-tile-copy small{display:block;font:8px/1.5 var(--mono);color:#71695f;margin-top:10px}
+@media(max-width:900px){.food-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 16px}.food-tile:nth-child(2),.food-tile:nth-child(6){margin-top:0}.food-tile:nth-child(even){margin-top:32px}}
+@media(max-width:640px){.food-gallery-grid{grid-template-columns:1fr 1fr;gap:24px 12px}.food-tile:nth-child(even){margin-top:22px}.food-tile-image{aspect-ratio:3/4}.food-tile-number,.food-tile-open{font-size:7px;padding:7px}.food-tile-number{left:7px;top:7px}.food-tile-open{right:7px;top:7px}.food-tile-copy h3{font-size:13px}.food-tile-copy p{font-size:12px;min-height:50px}.food-tile-copy small{font-size:7px}}
