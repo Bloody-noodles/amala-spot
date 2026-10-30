@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { MobileNavigation } from "@/components/mobile-navigation";
 import { SiteEntry } from "@/components/site-entry";
+import { OrderingExperience } from "@/components/ordering-experience";
 
 const categories = ["AMALA", "RICE", "SWALLOWS", "SOUPS", "GRILLS", "SMALL CHOPS", "DRINKS"];
 const dishes = [
@@ -103,6 +104,7 @@ export default function Home() {
         <nav className="menu-category-nav" aria-label="Jump to a menu category">{menuGroups.map((group,i)=><a key={group.cat} href={`#menu-category-${i+1}`}><span>0{i+1}</span>{group.cat}</a>)}</nav>
         <div className="menu-catalogue">{menuGroups.map((group,i)=><article className="menu-category" id={`menu-category-${i+1}`} key={group.cat}><a className="menu-category-image" href={group.href} target="_blank" rel="noreferrer" aria-label={`View source for ${group.cat} image`}><Image src={group.image} alt={group.alt} fill unoptimized sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw"/><span className="menu-category-index">0{i+1} / 07</span><span className="menu-category-source">PHOTO SOURCE ↗</span></a><div className="menu-category-content"><div className="menu-category-heading"><div><span>{group.eyebrow}</span><h3>{group.cat}</h3></div><ArrowUpRight /></div><p className="menu-category-description">{group.description}</p><div className="menu-category-items">{group.items.map(item=><span key={item}>{item}</span>)}</div><small className="menu-category-credit">{group.credit}</small></div></article>)}</div>
         <p className="sample-note">Concept catalogue only. No prices, stock status, or restaurant inventory are being represented as verified.</p>
+        <OrderingExperience />
       </section>
 
       <section className="assistant-promo">
