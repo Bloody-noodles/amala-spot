@@ -144,9 +144,15 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
       typeof entry.quantity === "number" && Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
     ).slice(0, 5);
 
+    const suggestionDetails = suggestions.map((entry: { itemId: string; quantity: number }) => {
+      const item = liveMenu.find(candidate => candidate.id === entry.itemId);
+      if (!item) return null;
+      return { itemId: item.id, quantity: entry.quantity, item: { id: item.id, name: item.name, category: item.category, description: item.description, priceKobo: item.priceKobo, options: item.options } };
+    }).filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
     return NextResponse.json({
       reply: typeof decoded?.reply === "string" ? decoded.reply.slice(0, 1600) : (plainReply || "What are you in the mood for?"),
-      suggestions
+      suggestions: suggestionDetails
     });
   } catch (error) {
     console.error("Assistant route error:", error);

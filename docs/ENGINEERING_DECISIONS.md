@@ -21,3 +21,9 @@
 - Testing stack and production domain.
 
 Record changes with date, rationale, alternatives, and consequences.
+
+
+## 2026-10-30 — Canonical assistant suggestions and atomic order transitions
+- The assistant API returns validated suggestion details from the same live menu snapshot used to ground its response. The storefront refreshes its canonical menu before rendering the basket action, avoiding a static-catalogue mismatch.
+- Admin order status changes and order-event history are written through one PostgreSQL function with row locking and an explicit transition graph. This prevents an order status from changing without its corresponding audit event.
+- The new database function is delivered as migration `0002_atomic_order_status.sql`; apply it in Supabase before relying on the updated admin status endpoint.

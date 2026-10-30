@@ -22,7 +22,7 @@ export function OrderingExperience() {
   const [error,setError]=useState("");
   const [receipt,setReceipt]=useState<Receipt|null>(null);
   const [showCart,setShowCart]=useState(false);
-  useEffect(()=>{let active=true;fetch("/api/menu",{cache:"no-store"}).then(async response=>{if(!response.ok)throw new Error("Live menu unavailable");return response.json();}).then(data=>{if(active&&Array.isArray(data.items)&&data.items.length)setMenu(data.items);}).catch(()=>{});return()=>{active=false;};},[]);
+  useEffect(()=>{let active=true;const loadMenu=()=>fetch("/api/menu",{cache:"no-store"}).then(async response=>{if(!response.ok)throw new Error("Live menu unavailable");return response.json();}).then(data=>{if(active&&Array.isArray(data.items)&&data.items.length)setMenu(data.items);}).catch(()=>{});const handleAssistantMenu=(event:Event)=>{const items=(event as CustomEvent<MenuItem[]>).detail;if(Array.isArray(items)&&items.length)setMenu(items);else void loadMenu();};void loadMenu();window.addEventListener("amala:menu-snapshot",handleAssistantMenu);return()=>{active=false;window.removeEventListener("amala:menu-snapshot",handleAssistantMenu);};},[]);
   const categories=["All",...Array.from(new Set(menu.map(item=>item.category)))];
 
   const visible=useMemo(()=>menu.filter(item=>(category==="All"||item.category===category)&&(`${item.name} ${item.description}`.toLowerCase().includes(query.toLowerCase()))),[category,query]);

@@ -13,3 +13,11 @@
 - Accessibility checks for keyboard navigation, labels, focus, and reduced motion.
 
 Do not report a check as passed unless it was run. Record unavailable test coverage as a limitation.
+
+
+## Regression coverage added in the live-menu and order-status integration milestone
+- Assistant suggestions include the canonical live menu item snapshot rather than relying on static fallback IDs.
+- Selecting an assistant suggestion refreshes the storefront's canonical menu before the basket action is available.
+- Admin order status and its audit event are committed atomically through `transition_customer_order_status`.
+- Concurrent or stale status updates are rejected by the database transition guard.
+- Apply Supabase migrations in order before deploying code that calls a newly introduced RPC.

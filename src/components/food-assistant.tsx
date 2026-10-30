@@ -2,10 +2,10 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowUp, Bot, Mic, MicOff, Plus, Sparkles, Volume2, VolumeX, X } from "lucide-react";
-import { menuItems, formatNaira } from "@/lib/menu";
+import { formatNaira, type MenuItem } from "@/lib/menu";
 
 type Message = { role: "user" | "assistant"; content: string };
-type Suggestion = { itemId: string; quantity: number };
+type Suggestion = { itemId: string; quantity: number; item: MenuItem };
 type SpeechRecognitionResultLike = { [index: number]: { transcript: string }; length: number };
 type SpeechRecognitionEventLike = { results: SpeechRecognitionResultLike[] };
 type SpeechRecognitionLike = {
@@ -34,6 +34,13 @@ export function FoodAssistant({ onAddItem }: { onAddItem: (itemId: string, quant
   const [listening, setListening] = useState(false);
   const [voiceReplies, setVoiceReplies] = useState(false);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
+  const setMenuSnapshot = async () => {
+    const response = await fetch("/api/menu", { cache: "no-store" });
+    if (!response.ok) throw new Error("The live menu could not be refreshed. Please use the menu to add this item.");
+    const data = await response.json();
+    if (!Array.isArray(data.items)) throw new Error("The live menu response was invalid. Please use the menu to add this item.");
+    window.dispatchEvent(new CustomEvent("amala:menu-snapshot", { detail: data.items as MenuItem[] }));
+  };
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -67,8 +74,10 @@ export function FoodAssistant({ onAddItem }: { onAddItem: (itemId: string, quant
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "The assistant is unavailable.");
       const answer = String(data.reply || "What else can I help you find?");
+      const nextSuggestions: Suggestion[] = Array.isArray(data.suggestions) ? data.suggestions : [];
+      if (nextSuggestions.length) await setMenuSnapshot();
       setMessages(current => [...current, { role: "assistant", content: answer }]);
-      setSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+      setSuggestions(nextSuggestions);
       if (voiceReplies && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(new SpeechSynthesisUtterance(answer));
@@ -100,10 +109,7 @@ export function FoodAssistant({ onAddItem }: { onAddItem: (itemId: string, quant
     instance.start();
   };
 
-  const suggestionsToShow = suggestions.map(suggestion => ({
-    ...suggestion,
-    item: menuItems.find(item => item.id === suggestion.itemId)
-  })).filter(entry => entry.item);
+  const suggestionsToShow = suggestions.filter(entry => entry.item && entry.item.id === entry.itemId);
 
   return <>
     <button className="food-assistant-launch" onClick={() => setOpen(value => !value)} aria-label={open ? "Close food assistant" : "Open food assistant"}>
