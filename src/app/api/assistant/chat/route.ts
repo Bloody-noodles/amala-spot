@@ -10,7 +10,8 @@ const schema = z.object({
   messages: z.array(z.object({
     role: z.enum(["user", "assistant"]),
     content: z.string().trim().min(1).max(1200)
-  })).min(1).max(12)
+  })).min(1).max(12),
+  cart: z.array(z.object({ itemId: z.string().min(1).max(120), quantity: z.number().int().min(1).max(50), options: z.array(z.string().min(1).max(120)).max(20).default([]) })).max(50).optional().default([])
 });
 
 const responseSchema = {
@@ -63,6 +64,25 @@ export async function POST(request: Request) {
       priceNaira: item.priceKobo / 100,
       extras: item.options.map(option => ({ id: option.id, name: option.label, priceNaira: option.priceKobo / 100 }))
     }));
+
+    const basket = parsed.data.cart.map(line => {
+      const item = liveMenu.find(candidate => candidate.id === line.itemId);
+      if (!item) return null;
+      const selectedOptions = item.options.filter(option => line.options.includes(option.id));
+      const unitPrice = item.priceKobo + selectedOptions.reduce((sum, option) => sum + option.priceKobo, 0);
+      return { name: item.name, quantity: line.quantity, options: selectedOptions.map(option => option.label), lineTotalKobo: unitPrice * line.quantity };
+    }).filter((line): line is NonNullable<typeof line> => line !== null);
+    const basketTotalKobo = basket.reduce((sum, line) => sum + line.lineTotalKobo, 0);
+    const basketText = basket.length
+      ? basket.map(line => `${line.quantity} × ${line.name}${line.options.length ? ` (${line.options.join(", ")})` : ""}: ₦${(line.lineTotalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`).join("; ")
+      : "Your basket is currently empty.";
+    const basketQuestion = parsed.data.messages.at(-1)?.content ?? "";
+    if (/\b(basket|cart)\b/i.test(basketQuestion) && /\b(what|which|how much|total|currently|in|have|show|contents|items?)\b/i.test(basketQuestion)) {
+      const reply = basket.length
+        ? `Your basket currently contains ${basketText}. Your current total is ₦${(basketTotalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
+        : "Your basket is currently empty. Add a dish from the menu or tap an AI suggestion to get started.";
+      return NextResponse.json({ reply, suggestions: [] });
+    }
 
     const systemInstruction = `You are the friendly Amala Spot food guide for an independent Nigerian food website concept.
 Speak naturally, warmly and concisely. You may understand Nigerian English, Nigerian food culture and casual phrasing. You are a food-discovery assistant, not a general-purpose chatbot: answer food, menu, taste, meal-choice and ordering questions helpfully; if the user changes to an unrelated topic, respond briefly and steer back to food.

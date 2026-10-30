@@ -22,7 +22,7 @@ type SpeechWindow = Window & {
   webkitSpeechRecognition?: new () => SpeechRecognitionLike;
 };
 
-export function FoodAssistant({ onAddItem }: { onAddItem: (itemId: string, quantity: number) => void }) {
+export function FoodAssistant({ onAddItem, cart }: { onAddItem: (itemId: string, quantity: number) => void; cart: { itemId: string; quantity: number; options: string[] }[] }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -69,7 +69,7 @@ export function FoodAssistant({ onAddItem }: { onAddItem: (itemId: string, quant
       const response = await fetch("/api/assistant/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-12) })
+        body: JSON.stringify({ messages: next.slice(-12), cart })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "The assistant is unavailable.");
