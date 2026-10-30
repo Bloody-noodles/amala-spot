@@ -8,6 +8,14 @@ update public.menu_items
 set category_id='drinks-refreshments'
 where id in ('zobo','chapman');
 
+-- Retire the original drinks category once its seeded items have moved.
+update public.menu_categories
+set is_active=false
+where id='drinks-treats'
+  and not exists (
+    select 1 from public.menu_items where category_id='drinks-treats'
+  );
+
 insert into public.menu_items (id,category_id,name,description,price_kobo,is_available) values
 ('coca-cola','drinks-refreshments','Coca-Cola','Chilled Coca-Cola soft drink.',180000,true),
 ('fanta-orange','drinks-refreshments','Fanta Orange','Bright orange-flavoured sparkling soft drink, served chilled.',180000,true),
@@ -32,7 +40,7 @@ insert into public.menu_items (id,category_id,name,description,price_kobo,is_ava
 ('sprite-can','drinks-refreshments','Sprite Can','Chilled Sprite in a can.',250000,true),
 ('7up-can','drinks-refreshments','7UP Can','Chilled 7UP in a can.',250000,true),
 ('pepsi-can','drinks-refreshments','Pepsi Can','Chilled Pepsi in a can.',250000,true)
-on conflict (id) do update set category_id=excluded.category_id,name=excluded.name,description=excluded.description,price_kobo=excluded.price_kobo,is_available=excluded.is_available;
+on conflict (id) do nothing;
 
 insert into public.menu_item_options (menu_item_id,id,label,price_kobo,is_available) values
 ('coca-cola','large','Large bottle',70000,true),('coca-cola','family','Family bottle',220000,true),
@@ -55,4 +63,4 @@ insert into public.menu_item_options (menu_item_id,id,label,price_kobo,is_availa
 ('sprite-can','pack-6','Pack of 6 cans',1100000,true),
 ('7up-can','pack-6','Pack of 6 cans',1100000,true),
 ('pepsi-can','pack-6','Pack of 6 cans',1100000,true)
-on conflict (menu_item_id,id) do update set label=excluded.label,price_kobo=excluded.price_kobo,is_available=excluded.is_available;
+on conflict (menu_item_id,id) do nothing;
