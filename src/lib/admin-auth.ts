@@ -50,5 +50,5 @@ export function getSupabaseAdminConfig() {
   return { url, key };
 }
 export function supabaseAdminHeaders(key: string) {
-  return { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
+  return { apikey: key, ...(process.env.SUPABASE_SECRET_KEY ? {} : { Authorization: `Bearer ${key}` }), "Content-Type": "application/json" };
 }
