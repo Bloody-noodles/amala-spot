@@ -33,11 +33,33 @@ export async function POST(request: Request) {
       totalKobo += unitKobo * line.quantity;
       lines.push({itemId:item.id,name:item.name,quantity:line.quantity,unitKobo,options:options.map(option=>({id:option!.id,label:option!.label,priceKobo:option!.priceKobo}))});
     }
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (supabaseUrl && serviceRoleKey) {
+      const databaseResponse = await fetch(`${supabaseUrl.replace(/\\/$/, "")}/rest/v1/rpc/create_customer_order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`
+        },
+        body: JSON.stringify({ payload: parsed.data }),
+        cache: "no-store"
+      });
+      if (!databaseResponse.ok) {
+        return NextResponse.json({ error: "We couldn't save this order. Please review the details and try again." }, { status: 503 });
+      }
+      const savedOrder = await databaseResponse.json();
+      return NextResponse.json({ ...savedOrder, mode: "saved" }, { status: 201 });
+    }
+
     const reference = `AS-DEMO-${Date.now().toString(36).toUpperCase()}`;
     return NextResponse.json({
       reference,totalKobo,customerName:parsed.data.customer.name,
       items:lines,
-      message:"This is a demonstration summary only. It has not been saved as a real order, sent to the restaurant, or paid for."
+      mode: "demo",
+      message:"This is a demonstration summary only. It has not been saved, sent to a restaurant, or paid for. Connect Supabase to enable database persistence."
     },{status:201});
   } catch {
     return NextResponse.json({error:"Unable to prepare the demo order right now."},{status:400});
