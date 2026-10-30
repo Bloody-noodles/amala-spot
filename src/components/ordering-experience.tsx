@@ -51,6 +51,6 @@ export function OrderingExperience() {
 
     {receipt&&<div className="order-modal-backdrop"><section className="order-modal receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><CheckCircle2 className="receipt-check"/><span className="eyebrow">{receipt.mode==="saved"?"ORDER RECORD CREATED":"DEMO ORDER SUMMARY"}</span><h3 id="receipt-title">{receipt.mode==="saved"?<>ORDER<br/>RECORDED.</>:<>ALL PUT<br/>TOGETHER.</>}</h3><p className="receipt-reference">REFERENCE · {receipt.reference}</p><strong className="receipt-total">{naira(receipt.totalKobo)}</strong><p>{receipt.message}</p>{receipt.mode==="saved"&&receipt.lookupToken&&<div className="receipt-tracking-key"><b>PRIVATE TRACKING KEY</b><code>{receipt.lookupToken}</code><small>Save this key. It is required alongside your reference to check order progress.</small><button type="button" onClick={()=>navigator.clipboard?.writeText(receipt.lookupToken!)}>COPY TRACKING KEY</button><a href="/track">TRACK THIS ORDER ↗</a></div>}<button className="checkout-button" onClick={()=>setReceipt(null)}>BACK TO MENU</button></section></div>}
     <p className="ordering-footnote">Independent concept experience. Prices are fictional sample values for interface testing, not verified restaurant prices.</p>
-    <FoodAssistant onAddItem={addAssistantItem}/>
+    <FoodAssistant onAddItem={addAssistantItem} cart={cart.map(({itemId,quantity,options})=>({itemId,quantity,options}))}/>
   </section>;
 }
