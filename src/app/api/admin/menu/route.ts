@@ -23,19 +23,21 @@ export async function POST(request:NextRequest){
    return NextResponse.json({category:(await r.json())[0]},{status:201});
   }
   const id=String(body.id||"").trim(),category_id=String(body.category_id||"").trim(),name=String(body.name||"").trim(),description=String(body.description||"").trim(),price_kobo=Number(body.price_kobo);
-  if(!/^[a-z0-9-]{2,60}$/.test(id)||!category_id||name.length<2||name.length>100||description.length>500||!Number.isSafeInteger(price_kobo)||price_kobo<0)return NextResponse.json({error:"Check the dish details and price."},{status:400});
-  const r=await db("menu_items",{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify({id,category_id,name,description,price_kobo,is_available:body.is_available!==false})});
-  if(!r.ok)return NextResponse.json({error:"Could not save dish. Its ID may already exist, or the category may be invalid."},{status:400});
-  const item=(await r.json())[0];
   const options=Array.isArray(body.options)?body.options:[];
+  if(!/^[a-z0-9-]{2,60}$/.test(id)||!category_id||name.length<2||name.length>100||description.length>500||!Number.isSafeInteger(price_kobo)||price_kobo<0||options.length>20)return NextResponse.json({error:"Check the dish details and price."},{status:400});
+  const seen=new Set<string>();
   for(const option of options){
    const oid=String(option.id||"").trim(),label=String(option.label||"").trim(),price=Number(option.price_kobo);
-   if(!/^[a-z0-9-]{1,50}$/.test(oid)||label.length<1||label.length>80||!Number.isSafeInteger(price)||price<0)return NextResponse.json({error:"Dish saved, but an extra has invalid details. Edit the dish to correct its extras."},{status:400});
+   if(!/^[a-z0-9-]{1,50}$/.test(oid)||seen.has(oid)||label.length<1||label.length>80||!Number.isSafeInteger(price)||price<0)return NextResponse.json({error:"One or more extras have invalid or duplicate details."},{status:400});
+   seen.add(oid);
   }
-  if(options.length){
-   const o=await db("menu_item_options",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(options.map((x:any)=>({id:String(x.id),menu_item_id:id,label:String(x.label),price_kobo:Number(x.price_kobo),is_available:x.is_available!==false})))});
-   if(!o.ok)return NextResponse.json({error:"Dish saved, but extras could not be saved. Reopen the dish and retry."},{status:400});
+  const payload={id,category_id,name,description,price_kobo,is_available:body.is_available!==false,options:options.map((x:any)=>({id:String(x.id).trim(),label:String(x.label).trim(),price_kobo:Number(x.price_kobo),is_available:x.is_available!==false}))};
+  const r=await db("rpc/create_admin_menu_item",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p_payload:payload})});
+  if(!r.ok){
+   const detail=await r.text();
+   const status=r.status===404?503:r.status===409?409:400;
+   return NextResponse.json({error:status===503?"Menu write function is not installed. Apply the required database migration.":"Could not create dish. Check its ID, category, and extras.",detail:process.env.NODE_ENV==="development"?detail:undefined},{status});
   }
-  return NextResponse.json({item},{status:201});
+  return NextResponse.json(await r.json(),{status:201});
  }catch{return NextResponse.json({error:"Invalid menu request."},{status:400});}
 }
