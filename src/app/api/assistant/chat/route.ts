@@ -105,7 +105,8 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     if (!response || !response.ok) {
       const status = response?.status;
       if (status === 429 || status === 503) {
-        console.error("All Gemini assistant models are temporarily unavailable:", status, await response.text());
+        const errorBody = response ? await response.text() : "No response";
+        console.error("All Gemini assistant models are temporarily unavailable:", status, errorBody);
         return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
       }
       console.error("Gemini request failed:", status, response ? await response.text() : "No response");
