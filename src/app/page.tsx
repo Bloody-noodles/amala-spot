@@ -6,9 +6,9 @@ import { SiteEntry } from "@/components/site-entry";
 
 const categories = ["AMALA", "RICE", "SWALLOWS", "SOUPS", "GRILLS", "SMALL CHOPS", "DRINKS"];
 const dishes = [
-  { name: "Amala, Gbegiri & Ewedu", note: "The full Yoruba trio, rich, earthy and deeply comforting.", price: "SAMPLE", image: "photo-1604908176997-125f25cc6f3d", tag: "YORUBA CLASSIC" },
-  { name: "Smoky Jollof Rice", note: "Long-grain rice with a bold, slow-cooked pepper base.", price: "SAMPLE", image: "photo-1512058564366-18510be2db19", tag: "RICE & STAPLES" },
-  { name: "Peppered Asun", note: "Fire-kissed, peppered meat with a proper kick.", price: "SAMPLE", image: "photo-1544025162-d76694265947", tag: "FROM THE GRILL" }
+  { name: "Amala, Gbegiri & Ewedu", note: "The full Yoruba trio, rich, earthy and deeply comforting.", price: "SAMPLE", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Amala_and_Gbegiri_with_Ewedu_soup.jpg", tag: "YORUBA CLASSIC", credit: "Bukky658 · Wikimedia Commons · CC BY-SA 4.0" },
+  { name: "Smoky Jollof Rice", note: "Nigerian party-style rice with a bold, slow-cooked pepper base.", price: "SAMPLE", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg", tag: "RICE & STAPLES", credit: "Halima Waziri · Wikimedia Commons · CC BY-SA 4.0" },
+  { name: "Peppered Asun", note: "Fire-kissed, peppered goat meat with a proper kick.", price: "SAMPLE", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Asun.jpg", tag: "FROM THE GRILL", credit: "Wikimedia Commons · CC BY-SA 4.0" }
 ];
 const menuGroups = [
  {cat:"SWALLOWS",items:["Amala","Eba","Iyan (Pounded Yam)","Semo","Wheat","Fufu","Starch"]},
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-visual">
-          <Image src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1400&q=90" alt="A richly prepared Nigerian-inspired meal" fill priority sizes="(max-width: 800px) 100vw, 55vw" />
+          <Image src="https://commons.wikimedia.org/wiki/Special:FilePath/Amala_and_Gbegiri_with_Ewedu_soup.jpg" alt="Yoruba amala served with gbegiri, ewedu, pepper stew and assorted meat" fill priority unoptimized sizes="(max-width: 800px) 100vw, 55vw" />
           <div className="hero-stamp"><span>REAL FOOD</span><b>REAL<br />FLAVOUR</b><span>ALWAYS.</span></div>
           <div className="hero-image-caption"><span>01 / THE GOOD STUFF</span><span>MADE WITH HEART ↗</span></div>
         </div>
@@ -68,12 +68,12 @@ export default function Home() {
 
       <section className="featured section-pad" id="experiences">
         <div className="section-heading"><div><Eyebrow>02 / SOMETHING FOR EVERY CRAVING</Eyebrow><h2>COME HUNGRY.<br /><em>LEAVE HAPPY.</em></h2></div><p>Big comfort. Bold flavour. A little something for every kind of appetite.</p></div>
-        <div className="dish-grid">{dishes.map((dish, i) => <article className="dish-card" key={dish.name}><div className="dish-image"><Image src={`https://images.unsplash.com/${dish.image}?auto=format&fit=crop&w=900&q=85`} alt={dish.name} fill sizes="(max-width: 800px) 90vw, 30vw" /><span className="dish-index">0{i + 1}</span><span className="dish-tag">{dish.tag}</span></div><div className="dish-meta"><div><h3>{dish.name}</h3><p>{dish.note}</p></div><span>{dish.price}</span></div></article>)}</div>
+        <div className="dish-grid">{dishes.map((dish, i) => <article className="dish-card" key={dish.name}><div className="dish-image"><Image src={dish.image} alt={dish.name} fill unoptimized sizes="(max-width: 800px) 90vw, 30vw" /><span className="dish-index">0{i + 1}</span><span className="dish-tag">{dish.tag}</span></div><div className="dish-meta"><div><h3>{dish.name}</h3><p>{dish.note}</p></div><span>{dish.price}</span></div><p className="image-credit">{dish.credit}</p></article>)}</div>
         <p className="sample-note">Menu photography is illustrative. Prices and availability will be populated from verified menu data.</p>
       </section>
 
       <section className="statement">
-        <div className="statement-image"><Image src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1800&q=90" alt="A spread of colourful food" fill sizes="100vw" /></div>
+        <div className="statement-image"><Image src="https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg" alt="A plate of Nigerian jollof rice" fill unoptimized sizes="100vw" /></div>
         <div className="statement-overlay"><Eyebrow>MADE FOR EVERY KIND OF GATHERING</Eyebrow><h2>PASS THE PLATE.<br /><em>SHARE THE LOVE.</em></h2><Link className="light-link" href="#menu">FIND YOUR NEXT FAVOURITE <ArrowUpRight size={16} /></Link></div>
       </section>
 
