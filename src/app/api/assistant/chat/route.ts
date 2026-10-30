@@ -77,40 +77,39 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     // Flash as a fallback if the primary model is temporarily overloaded.
     const models = ["gemini-3.5-flash-lite", "gemini-3.8-flash"];
     let response: Response | null = null;
+    let lastFailure = "provider";
     for (const model of models) {
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          contents: parsed.data.messages.map(message => ({
-            role: message.role === "assistant" ? "model" : "user",
-            parts: [{ text: message.content }]
-          })),
-          generationConfig: {
-            temperature: 0.55,
-            maxOutputTokens: 400,
-            responseMimeType: "application/json",
-            responseSchema
-          }
-        }),
-        signal: AbortSignal.timeout(12000),
-        cache: "no-store"
-      });
-      if (response.ok) break;
-      if (response.status !== 429 && response.status !== 503) break;
-      console.warn(`Gemini model ${model} is temporarily unavailable (${response.status}); trying fallback.`);
+      try {
+        const attempt = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            contents: parsed.data.messages.map(message => ({ role: message.role === "assistant" ? "model" : "user", parts: [{ text: message.content }] })),
+            generationConfig: { temperature: 0.55, maxOutputTokens: 400, responseMimeType: "application/json", responseSchema }
+          }),
+          signal: AbortSignal.timeout(9500),
+          cache: "no-store"
+        });
+        if (attempt.ok) { response = attempt; break; }
+        if (attempt.status !== 429 && attempt.status !== 503) { response = attempt; break; }
+        lastFailure = "unavailable";
+        console.warn(`Gemini model ${model} returned ${attempt.status}; trying fallback.`);
+      } catch (error) {
+        lastFailure = "network or timeout";
+        console.warn(`Gemini model ${model} failed before responding; trying fallback.`, error);
+      }
     }
 
     if (!response || !response.ok) {
       const status = response?.status;
-      if (status === 429 || status === 503) {
-        const errorBody = response ? await response.text() : "No response";
-        console.error("All Gemini assistant models are temporarily unavailable:", status, errorBody);
+      if (status === 429 || status === 503 || !response) {
+        if (response) console.error("Gemini assistant models unavailable:", status, await response.text());
+        else console.error("All Gemini assistant attempts failed:", lastFailure);
         return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
       }
-      console.error("Gemini request failed:", status, response ? await response.text() : "No response");
-      return NextResponse.json({ error: "The assistant couldn't respond just now. Please try again." }, { status: 502 });
+      console.error("Gemini request failed:", status, await response.text());
+      return NextResponse.json({ error: "The assistant could not respond just now. Please try again." }, { status: 502 });
     }
 
     const result = await response.json();
