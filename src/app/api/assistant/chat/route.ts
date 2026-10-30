@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     }));
 
     const systemInstruction = `You are the friendly Amala Spot food guide for an independent Nigerian food website concept.
-Speak naturally, warmly and concisely. You may understand Nigerian English and casual phrasing.
+Speak naturally, warmly and concisely. You may understand Nigerian English, Nigerian food culture and casual phrasing. You are a food-discovery assistant, not a general-purpose chatbot: answer food, menu, taste, meal-choice and ordering questions helpfully; if the user changes to an unrelated topic, respond briefly and steer back to food.
 Use ONLY the menu catalogue below for dish names, descriptions, prices and extras. Never invent stock, opening hours, delivery, allergens, ingredients not listed, real restaurant facts or availability. If asked about unavailable information, say it is not verified in this concept.
 Prices are illustrative sample prices in Nigerian naira, not real restaurant prices. If asked, be transparent.
 Help people discover dishes and make choices. Ask one useful follow-up if needed.
@@ -73,7 +73,7 @@ When a user clearly asks to add menu items to their basket, return those exact i
 Return valid JSON matching the response schema, with a concise reply and suggestions (empty array unless the customer clearly requests adding items).
 MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent", {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
@@ -84,12 +84,12 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
         })),
         generationConfig: {
           temperature: 0.55,
-          maxOutputTokens: 500,
+          maxOutputTokens: 400,
           responseMimeType: "application/json",
           responseSchema
         }
       }),
-      signal: AbortSignal.timeout(25000),
+      signal: AbortSignal.timeout(27000),
       cache: "no-store"
     });
 
@@ -101,7 +101,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
 
     const result = await response.json();
     const raw = result.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? "").join("") ?? "";
-    const decoded = JSON.parse(raw);
+    const decoded = JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim());
     const allowed = new Set(liveMenu.map(item => item.id));
     const suggestions = Array.isArray(decoded.suggestions)
       ? decoded.suggestions.filter((entry: { itemId?: string; quantity?: number }) =>
