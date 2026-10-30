@@ -2,12 +2,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { MobileNavigation } from "@/components/mobile-navigation";
+import { SiteEntry } from "@/components/site-entry";
 
 const categories = ["AMALA", "RICE", "SWALLOWS", "SOUPS", "GRILLS", "SMALL CHOPS", "DRINKS"];
 const dishes = [
-  { name: "Amala & Ewedu", note: "A Yoruba classic, rich and deeply comforting.", price: "₦ —", image: "photo-1604908176997-125f25cc6f3d", tag: "HOUSE FAVOURITE" },
-  { name: "Smoky Jollof Rice", note: "Long-grain rice with a bold, slow-cooked pepper base.", price: "₦ —", image: "photo-1512058564366-18510be2db19", tag: "RICE & STAPLES" },
-  { name: "Asun", note: "Peppered, fire-kissed meat with a proper kick.", price: "₦ —", image: "photo-1544025162-d76694265947", tag: "FROM THE GRILL" }
+  { name: "Amala, Gbegiri & Ewedu", note: "The full Yoruba trio, rich, earthy and deeply comforting.", price: "SAMPLE", image: "photo-1604908176997-125f25cc6f3d", tag: "YORUBA CLASSIC" },
+  { name: "Smoky Jollof Rice", note: "Long-grain rice with a bold, slow-cooked pepper base.", price: "SAMPLE", image: "photo-1512058564366-18510be2db19", tag: "RICE & STAPLES" },
+  { name: "Peppered Asun", note: "Fire-kissed, peppered meat with a proper kick.", price: "SAMPLE", image: "photo-1544025162-d76694265947", tag: "FROM THE GRILL" }
+];
+const menuGroups = [
+ {cat:"SWALLOWS",items:["Amala","Eba","Iyan (Pounded Yam)","Semo","Wheat","Fufu","Starch"]},
+ {cat:"SOUPS & STEWS",items:["Ewedu","Gbegiri","Egusi","Efo Riro","Ogbono","Okra Soup","Afang Soup","Edikang Ikong","Oha Soup","Banga Soup","Bitterleaf Soup","Nsala (White Soup)","Groundnut Soup","Vegetable Soup","Ofada Stew","Ata Din Din"]},
+ {cat:"RICE & GRAINS",items:["Smoky Jollof Rice","Nigerian Fried Rice","Ofada Rice","White Rice","Coconut Rice","Native Rice","Basmati Rice","Rice & Beans","Beans Porridge","Yam Porridge"]},
+ {cat:"SIDES & SMALL CHOPS",items:["Dodo (Fried Plantain)","Moi Moi","Akara","Puff Puff","Samosa","Spring Rolls","Peppered Gizzard","Peppered Ponmo","Coleslaw","Boiled Yam","Fried Yam","Boiled Plantain"]},
+ {cat:"GRILLS & PROTEIN",items:["Asun","Suya","Grilled Chicken","Peppered Turkey","BBQ Chicken","Peppered Beef","Grilled Fish","Pepper Soup","Chicken Pepper Soup","Goat Meat Pepper Soup","Turkey Wings"]},
+ {cat:"QUICK BITES & MORE",items:["Shawarma","Chicken & Chips","Spaghetti","Stir-fry Noodles","Beef Burger","Club Sandwich"]},
+ {cat:"DRINKS & TREATS",items:["Zobo","Chapman","Fresh Orange Juice","Smoothies","Tiger Nut Drink","Kunu","Parfait","Fruit Salad","Yoghurt"]}
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -16,7 +26,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 export default function Home() {
   return (
-    <main>
+    <SiteEntry><main>
       <div className="announcement"><span>THE TASTE OF HOME, WITH A LITTLE EXTRA.</span><span>MADE FOR THE WAY WE EAT <span aria-hidden>↗</span></span></div>
       <header className="site-header">
         <Link className="wordmark" href="/" aria-label="Amala Spot home">AMALA<span>SPOT</span><i>®</i></Link>
@@ -74,7 +84,7 @@ export default function Home() {
 
       <section className="menu-section section-pad" id="menu">
         <div className="menu-head"><div><Eyebrow>04 / STRAIGHT FROM THE MENU</Eyebrow><h2>THE GOOD<br /><em>STUFF.</em></h2></div><p>A taste of what’s on the table. The full catalogue will be powered by one live menu source.</p></div>
-        <div className="menu-list">{[{cat:"SWALLOWS & SOUPS",items:"Amala · Eba · Iyan · Semo · Ewedu · Gbegiri · Egusi"},{cat:"RICE & STAPLES",items:"Jollof Rice · Fried Rice · Ofada Rice · Beans · Plantain"},{cat:"GRILLS & MORE",items:"Asun · BBQ · Chicken · Moi Moi · Pepper Soup"},{cat:"DRINKS & TREATS",items:"Zobo · Smoothies · Parfait"}].map((group,i)=><article className="menu-row" key={group.cat}><span>0{i+1}</span><h3>{group.cat}</h3><p>{group.items}</p><ArrowUpRight /></article>)}</div>
+        <div className="menu-list">{menuGroups.map((group,i)=><article className="menu-row" key={group.cat}><span>{String(i+1).padStart(2,"0")}</span><h3>{group.cat}</h3><p>{group.items.map((item,j)=><span className="menu-item" key={item}>{item}{j < group.items.length-1 ? <i> · </i> : null}</span>)}</p><ArrowUpRight /></article>)}</div>
         <p className="sample-note">Concept catalogue only. No prices, stock status, or restaurant inventory are being represented as verified.</p>
       </section>
 
@@ -86,6 +96,6 @@ export default function Home() {
 
       <section className="closing section-pad" id="contact"><Eyebrow>GOOD FOOD IS BETTER SHARED</Eyebrow><h2>SEE YOU<br /><em>AT THE TABLE.</em></h2><Link className="closing-cta" href="#menu">EXPLORE THE MENU <ArrowUpRight /></Link></section>
       <footer className="footer"><Link className="wordmark footer-logo" href="/">AMALA<span>SPOT</span><i>®</i></Link><p>A Nigerian food experience, built with heart.</p><div><Link href="#story">OUR STORY</Link><Link href="#menu">MENU</Link><Link href="#contact">CONTACT</Link></div><small>INDEPENDENT CONCEPT PROJECT · © {new Date().getFullYear()} AMALA SPOT</small></footer>
-    </main>
+    </main></SiteEntry>
   );
 }
