@@ -52,3 +52,16 @@ export function getSupabaseAdminConfig() {
 export function supabaseAdminHeaders(key: string) {
   return { apikey: key, ...(process.env.SUPABASE_SECRET_KEY ? {} : { Authorization: `Bearer ${key}` }), "Content-Type": "application/json" };
 }
+
+export function hasSafeRequestOrigin(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  if (origin) {
+    try {
+      return new URL(origin).origin === request.nextUrl.origin;
+    } catch {
+      return false;
+    }
+  }
+  const fetchSite = request.headers.get("sec-fetch-site");
+  return fetchSite !== "cross-site";
+}
