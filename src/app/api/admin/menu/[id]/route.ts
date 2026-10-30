@@ -1,8 +1,9 @@
 import { NextRequest,NextResponse } from "next/server";
-import { getSupabaseAdminConfig,isAdminRequest,supabaseAdminHeaders } from "@/lib/admin-auth";
+import { getSupabaseAdminConfig,isAdminRequest,supabaseAdminHeaders,hasSafeRequestOrigin } from "@/lib/admin-auth";
 export const dynamic="force-dynamic";
 async function db(path:string,init:RequestInit={}){const {url,key}=getSupabaseAdminConfig();return fetch(`${url}/rest/v1/${path}`,{...init,headers:{...supabaseAdminHeaders(key),...(init.headers||{})},cache:"no-store"});}
 export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:string}>}){
+ if(!hasSafeRequestOrigin(request))return NextResponse.json({error:"Cross-origin requests are not allowed."},{status:403});
  if(!isAdminRequest(request))return NextResponse.json({error:"Admin authentication required."},{status:401});
  const {id}=await params;
  try{
@@ -18,6 +19,7 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
  }catch{return NextResponse.json({error:"Invalid menu update."},{status:400});}
 }
 export async function DELETE(request:NextRequest,{params}:{params:Promise<{id:string}>}){
+ if(!hasSafeRequestOrigin(request))return NextResponse.json({error:"Cross-origin requests are not allowed."},{status:403});
  if(!isAdminRequest(request))return NextResponse.json({error:"Admin authentication required."},{status:401});
  const {id}=await params;
  try{const r=await db(`menu_items?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify({is_available:false,updated_at:new Date().toISOString()})});if(!r.ok)return NextResponse.json({error:"Could not hide dish."},{status:400});const rows=await r.json();return NextResponse.json({success:rows.length>0});}
