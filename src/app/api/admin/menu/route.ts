@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdminConfig, isAdminRequest, supabaseAdminHeaders } from "@/lib/admin-auth";
+import { getSupabaseAdminConfig, isAdminRequest, supabaseAdminHeaders, hasSafeRequestOrigin } from "@/lib/admin-auth";
 export const dynamic="force-dynamic";
 async function db(path:string,init:RequestInit={}){const {url,key}=getSupabaseAdminConfig();return fetch(`${url}/rest/v1/${path}`,{...init,headers:{...supabaseAdminHeaders(key),...(init.headers||{})},cache:"no-store"});}
 export async function GET(request:NextRequest){
@@ -12,6 +12,7 @@ export async function GET(request:NextRequest){
  }catch{return NextResponse.json({error:"Could not load menu data."},{status:503});}
 }
 export async function POST(request:NextRequest){
+ if(!hasSafeRequestOrigin(request))return NextResponse.json({error:"Cross-origin requests are not allowed."},{status:403});
  if(!isAdminRequest(request))return NextResponse.json({error:"Admin authentication required."},{status:401});
  try{
   const body=await request.json();
