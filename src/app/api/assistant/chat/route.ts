@@ -77,7 +77,7 @@ export async function POST(request: Request) {
       ? basket.map(line => `${line.quantity} × ${line.name}${line.options.length ? ` (${line.options.join(", ")})` : ""}: ₦${(line.lineTotalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`).join("; ")
       : "Your basket is currently empty.";
     const basketQuestion = parsed.data.messages.at(-1)?.content ?? "";
-    if (/\\b(basket|cart)\\b/i.test(basketQuestion) && /\\b(what|which|how much|total|currently|in|have|show|contents|items?)\\b/i.test(basketQuestion)) {
+    if (/\b(basket|cart)\b/i.test(basketQuestion) && /\b(what|which|how much|total|currently|in|have|show|contents|items?)\b/i.test(basketQuestion)) {
       const reply = basket.length
         ? `Your basket currently contains ${basketText}. Your current total is ₦${(basketTotalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
         : "Your basket is currently empty. Add a dish from the menu or tap an AI suggestion to get started.";
