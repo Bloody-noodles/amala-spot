@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSupabaseAdminConfig, isAdminRequest, supabaseAdminHeaders } from "@/lib/admin-auth";
+import { getSupabaseAdminConfig, isAdminRequest, supabaseAdminHeaders, hasSafeRequestOrigin } from "@/lib/admin-auth";
 
 const schema = z.object({ status: z.enum(["received", "confirmed", "preparing", "ready", "completed", "cancelled"]), note: z.string().trim().max(300).optional() });
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  if (!hasSafeRequestOrigin(request)) return NextResponse.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
   if (!isAdminRequest(request)) return NextResponse.json({ error: "Admin authentication required." }, { status: 401 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Choose a valid next status." }, { status: 400 });
