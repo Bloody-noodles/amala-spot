@@ -73,29 +73,42 @@ When a user clearly asks to add menu items to their basket, return those exact i
 Return valid JSON matching the response schema, with a concise reply and suggestions (empty array unless the customer clearly requests adding items).
 MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        contents: parsed.data.messages.map(message => ({
-          role: message.role === "assistant" ? "model" : "user",
-          parts: [{ text: message.content }]
-        })),
-        generationConfig: {
-          temperature: 0.55,
-          maxOutputTokens: 400,
-          responseMimeType: "application/json",
-          responseSchema
-        }
-      }),
-      signal: AbortSignal.timeout(27000),
-      cache: "no-store"
-    });
+    // Use Google's current Flash-Lite model for fast food-guide turns, with
+    // Flash as a fallback if the primary model is temporarily overloaded.
+    const models = ["gemini-3.5-flash-lite", "gemini-3.8-flash"];
+    let response: Response | null = null;
+    for (const model of models) {
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          contents: parsed.data.messages.map(message => ({
+            role: message.role === "assistant" ? "model" : "user",
+            parts: [{ text: message.content }]
+          })),
+          generationConfig: {
+            temperature: 0.55,
+            maxOutputTokens: 400,
+            responseMimeType: "application/json",
+            responseSchema
+          }
+        }),
+        signal: AbortSignal.timeout(12000),
+        cache: "no-store"
+      });
+      if (response.ok) break;
+      if (response.status !== 429 && response.status !== 503) break;
+      console.warn(`Gemini model ${model} is temporarily unavailable (${response.status}); trying fallback.`);
+    }
 
-    if (!response.ok) {
-      if (response.status === 429) return NextResponse.json({ error: "The assistant is busy right now. Please try again shortly." }, { status: 429 });
-      console.error("Gemini request failed:", response.status, await response.text());
+    if (!response || !response.ok) {
+      const status = response?.status;
+      if (status === 429 || status === 503) {
+        console.error("All Gemini assistant models are temporarily unavailable:", status, await response.text());
+        return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
+      }
+      console.error("Gemini request failed:", status, response ? await response.text() : "No response");
       return NextResponse.json({ error: "The assistant couldn't respond just now. Please try again." }, { status: 502 });
     }
 
