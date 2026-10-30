@@ -138,10 +138,12 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     const plainReply = cleaned.replace(/^Here is the response:?\s*/i, "").slice(0, 1600);
     const allowed = new Set(liveMenu.map(item => item.id));
     const rawSuggestions = decoded && Array.isArray(decoded.suggestions) ? decoded.suggestions : [];
-    const suggestions = rawSuggestions.filter((entry: any) =>
-      entry && typeof entry.itemId === "string" && allowed.has(entry.itemId) &&
-      typeof entry.quantity === "number" && Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
-    ).slice(0, 5);
+    const suggestions = rawSuggestions.filter((entry): entry is { itemId: string; quantity: number } => {
+      if (!entry || typeof entry !== "object") return false;
+      const candidate = entry as { itemId?: unknown; quantity?: unknown };
+      return typeof candidate.itemId === "string" && allowed.has(candidate.itemId) &&
+        typeof candidate.quantity === "number" && Number.isInteger(candidate.quantity) && candidate.quantity > 0 && candidate.quantity <= 10;
+    }).slice(0, 5);
 
     const suggestionDetails = suggestions.map((entry: { itemId: string; quantity: number }) => {
       const item = liveMenu.find(candidate => candidate.id === entry.itemId);
