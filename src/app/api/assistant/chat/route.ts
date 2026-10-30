@@ -90,7 +90,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     const suggestions = Array.isArray(decoded.suggestions)
       ? decoded.suggestions.filter((entry: { itemId?: string; quantity?: number }) =>
           typeof entry.itemId === "string" && allowed.has(entry.itemId) &&
-          Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
+          typeof entry.quantity === "number" && Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
         ).slice(0, 5)
       : [];
 
