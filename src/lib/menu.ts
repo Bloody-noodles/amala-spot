@@ -1,3 +1,5 @@
+import { drinkMenuItems } from "@/lib/drinks-menu";
+
 export type MenuOption = { id: string; label: string; priceKobo: number };
 export type MenuItem = {
   id: string; name: string; category: string; description: string;
@@ -21,8 +23,7 @@ export const menuItems: MenuItem[] = [
   { id:"pepper-soup", name:"Assorted Meat Pepper Soup", category:"Grills & Protein", description:"A warming peppery broth with assorted cuts.", priceKobo:600000, options:[{id:"goat",label:"Add goat meat",priceKobo:180000}] },
   { id:"dodo", name:"Dodo (Fried Plantain)", category:"Sides & Small Chops", description:"Sweet ripe plantain, fried golden.", priceKobo:180000, options:[{id:"large",label:"Large portion",priceKobo:100000}] },
   { id:"moi-moi", name:"Moi Moi", category:"Sides & Small Chops", description:"Steamed bean pudding, soft and savoury.", priceKobo:150000, options:[{id:"egg",label:"With egg",priceKobo:50000}] },
-  { id:"zobo", name:"Chilled Zobo", category:"Drinks & Treats", description:"A refreshing hibiscus drink, served chilled.", priceKobo:120000, options:[{id:"large",label:"Large bottle",priceKobo:80000}] },
-  { id:"chapman", name:"Chapman", category:"Drinks & Treats", description:"A bright, fruity Nigerian-style mocktail.", priceKobo:180000, options:[{id:"large",label:"Large glass",priceKobo:70000}] }
+  ...drinkMenuItems
 ];
 
 export const formatNaira = (kobo: number) => new Intl.NumberFormat("en-NG", {

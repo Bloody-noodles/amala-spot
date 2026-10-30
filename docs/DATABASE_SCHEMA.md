@@ -47,3 +47,8 @@ The Next.js order route calls this RPC only when both `NEXT_PUBLIC_SUPABASE_URL`
 5. Place a clearly labelled test order and verify the order header, line snapshots, option snapshots, and initial `received` event in the Supabase Table Editor.
 
 The anon key remains in `.env.example` for future public menu reads, but this order-write path does not need it. No payment gateway, restaurant dispatch, customer-facing order lookup, admin interface, or production fulfilment is enabled by this migration. Do not enter real customer data into this showcase until privacy, retention, access, and fulfilment processes are designed and approved.
+
+
+## Drinks catalogue expansion (migration 0002)
+
+Apply `supabase/migrations/0002_expand_drinks_catalogue.sql` after migration 0001 to add the Drinks & Refreshments category and a broad illustrative Nigerian drinks range: Coca-Cola, Fanta, Sprite, 7UP, Pepsi, malt drinks, Five Alive, Chivita, Geek and Hollandia yoghurt, almond drink, tiger-nut milk, kunu, bottled water, canned variants, zobo, and Chapman. Product sizes and multipacks are represented as menu options with additive price adjustments. The prices are sample portfolio data, not verified Ekiti retail prices; replace them through the admin menu before presenting them as actual prices. The migration is safe to re-run: existing seeded item and option records are left unchanged, preserving any prices or availability subsequently edited by an administrator. The original `drinks-treats` category is deactivated only when no menu items remain assigned to it.
