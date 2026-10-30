@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, ArrowUpRight, Menu as MenuIcon } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { MobileNavigation } from "@/components/mobile-navigation";
 
 const categories = ["AMALA", "RICE", "SWALLOWS", "SOUPS", "GRILLS", "SMALL CHOPS", "DRINKS"];
 const dishes = [
@@ -23,7 +24,7 @@ export default function Home() {
           <Link href="#story">OUR STORY</Link><Link href="#menu">THE MENU</Link><Link href="#experiences">EXPERIENCES</Link><Link href="#contact">CONTACT</Link>
         </nav>
         <Link className="header-cta" href="#menu">EXPLORE MENU <ArrowUpRight size={15} /></Link>
-        <button className="mobile-menu" aria-label="Open navigation"><MenuIcon /></button>
+        <MobileNavigation />
       </header>
 
       <section className="hero">
