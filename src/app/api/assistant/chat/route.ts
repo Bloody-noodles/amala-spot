@@ -100,18 +100,38 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     }
 
     const result = await response.json();
-    const raw = result.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? "").join("") ?? "";
-    const decoded = JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim());
+    const raw = result.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? "").join("").trim() ?? "";
+    if (!raw) {
+      const reason = result.candidates?.[0]?.finishReason;
+      console.error("Gemini returned no text:", reason || "unknown finish reason");
+      return NextResponse.json({ error: "Amala AI could not form a reply just now. Please try a shorter message." }, { status: 502 });
+    }
+
+    // Structured output is requested, but the provider can occasionally wrap
+    // JSON in prose or code fences. Recover JSON when possible; otherwise keep
+    // a plain-text answer instead of failing the entire chat request.
+    const cleaned = raw.replace(/^\x60\x60\x60(?:json)?\s*/i, "").replace(/\s*\x60\x60\x60$/, "").trim();
+    let decoded: { reply?: unknown; suggestions?: unknown } | null = null;
+    try {
+      decoded = JSON.parse(cleaned);
+    } catch {
+      const objectStart = cleaned.indexOf("{");
+      const objectEnd = cleaned.lastIndexOf("}");
+      if (objectStart >= 0 && objectEnd > objectStart) {
+        try { decoded = JSON.parse(cleaned.slice(objectStart, objectEnd + 1)); } catch { decoded = null; }
+      }
+    }
+
+    const plainReply = cleaned.replace(/^Here is the response:?\s*/i, "").slice(0, 1600);
     const allowed = new Set(liveMenu.map(item => item.id));
-    const suggestions = Array.isArray(decoded.suggestions)
-      ? decoded.suggestions.filter((entry: { itemId?: string; quantity?: number }) =>
-          typeof entry.itemId === "string" && allowed.has(entry.itemId) &&
-          typeof entry.quantity === "number" && Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
-        ).slice(0, 5)
-      : [];
+    const rawSuggestions = decoded && Array.isArray(decoded.suggestions) ? decoded.suggestions : [];
+    const suggestions = rawSuggestions.filter((entry: any) =>
+      entry && typeof entry.itemId === "string" && allowed.has(entry.itemId) &&
+      typeof entry.quantity === "number" && Number.isInteger(entry.quantity) && entry.quantity > 0 && entry.quantity <= 10
+    ).slice(0, 5);
 
     return NextResponse.json({
-      reply: typeof decoded.reply === "string" ? decoded.reply.slice(0, 1600) : "What are you in the mood for?",
+      reply: typeof decoded?.reply === "string" ? decoded.reply.slice(0, 1600) : (plainReply || "What are you in the mood for?"),
       suggestions
     });
   } catch (error) {
