@@ -2,11 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      { protocol: "images.unsplash.com", hostname: "images.unsplash.com" }
-    ]
-  }
+  images: { remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }] }
 };
 
 export default nextConfig;
