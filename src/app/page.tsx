@@ -10,6 +10,17 @@ const dishes = [
   { name: "Smoky Jollof Rice", note: "Nigerian party-style rice with a bold, slow-cooked pepper base.", price: "SAMPLE", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg", tag: "RICE & STAPLES", credit: "Halima Waziri · Wikimedia Commons · CC BY-SA 4.0" },
   { name: "Peppered Asun", note: "Fire-kissed, peppered goat meat with a proper kick.", price: "SAMPLE", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Asun.jpg", tag: "FROM THE GRILL", credit: "Wikimedia Commons · CC BY-SA 4.0" }
 ];
+const foodGallery = [
+  { title: "AMALA & ABULA", subtitle: "Yam-flour swallow with gbegiri, ewedu and stew", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Amala_and_Gbegiri_with_Ewedu_soup.jpg", alt: "Amala with gbegiri, ewedu, pepper stew and beef", credit: "Photo: Bukky658 · CC BY-SA 4.0", href: "https://commons.wikimedia.org/wiki/File:Amala_and_Gbegiri_with_Ewedu_soup.jpg" },
+  { title: "NIGERIAN JOLLOF", subtitle: "The party-table favourite", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg", alt: "Nigerian jollof rice", credit: "Photo: Halima Waziri · CC BY-SA 4.0", href: "https://commons.wikimedia.org/wiki/File:Nigerian_jollof_rice.jpg" },
+  { title: "OFADA RICE", subtitle: "Local rice with its signature pepper sauce", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Ofada_Rice.jpg", alt: "Ofada rice with traditional sauce and assorted meat", credit: "Photo: Ijeoma · CC BY-SA 4.0", href: "https://commons.wikimedia.org/wiki/File:Ofada_Rice.jpg" },
+  { title: "EGUSI SOUP", subtitle: "A rich Nigerian melon-seed soup", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Assorted_Egusi.jpg", alt: "Nigerian egusi soup with assorted protein", credit: "Wikimedia Commons · see source", href: "https://commons.wikimedia.org/wiki/Category:Egusi_soup" },
+  { title: "ASUN", subtitle: "Peppered, smoky goat meat", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Asun.jpg", alt: "Nigerian asun peppered goat meat", credit: "Wikimedia Commons · see source", href: "https://commons.wikimedia.org/wiki/File:Asun.jpg" },
+  { title: "BANGA SOUP", subtitle: "Palm-fruit soup from the Niger Delta", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Banga_Soup.jpg", alt: "Nigerian banga soup", credit: "Wikimedia Commons · see source", href: "https://commons.wikimedia.org/wiki/File:Banga_Soup.jpg" },
+  { title: "AKARA", subtitle: "Crisp bean cakes, freshly fried", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Akara.jpg", alt: "Nigerian akara bean cakes", credit: "Wikimedia Commons · see source", href: "https://commons.wikimedia.org/wiki/File:Akara.jpg" },
+  { title: "PEPPER SOUP", subtitle: "A warming, peppery Nigerian broth", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Assorted_meat_pepper_soup_at_Lagos_Island.jpg", alt: "Assorted meat pepper soup at Lagos Island", credit: "Wikimedia Commons · see source", href: "https://commons.wikimedia.org/wiki/File:Assorted_meat_pepper_soup_at_Lagos_Island.jpg" }
+];
+
 const menuGroups = [
  {cat:"SWALLOWS",items:["Amala","Eba","Iyan (Pounded Yam)","Semo","Wheat","Fufu","Starch"]},
  {cat:"SOUPS & STEWS",items:["Ewedu","Gbegiri","Egusi","Efo Riro","Ogbono","Okra Soup","Afang Soup","Edikang Ikong","Oha Soup","Banga Soup","Bitterleaf Soup","Nsala (White Soup)","Groundnut Soup","Vegetable Soup","Ofada Stew","Ata Din Din"]},
@@ -75,6 +86,11 @@ export default function Home() {
       <section className="statement">
         <div className="statement-image"><Image src="https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg" alt="A plate of Nigerian jollof rice" fill unoptimized sizes="100vw" /></div>
         <div className="statement-overlay"><Eyebrow>MADE FOR EVERY KIND OF GATHERING</Eyebrow><h2>PASS THE PLATE.<br /><em>SHARE THE LOVE.</em></h2><Link className="light-link" href="#menu">FIND YOUR NEXT FAVOURITE <ArrowUpRight size={16} /></Link></div>
+      </section>
+
+      <section className="food-gallery section-pad" id="food-gallery">
+        <div className="section-heading"><div><Eyebrow>03 / A FEW FAMILIAR FAVOURITES</Eyebrow><h2>NAIJA ON<br /><em>THE TABLE.</em></h2></div><p>Real dishes, recognisable flavours. Explore a little of the food culture behind the menu.</p></div>
+        <div className="food-gallery-grid">{foodGallery.map((food,i)=><article className="food-tile" key={food.title}><a className="food-tile-image" href={food.href} target="_blank" rel="noreferrer"><Image src={food.image} alt={food.alt} fill unoptimized sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 25vw" /><span className="food-tile-number">0{i+1}</span><span className="food-tile-open">VIEW SOURCE ↗</span></a><div className="food-tile-copy"><div><h3>{food.title}</h3><p>{food.subtitle}</p></div><small>{food.credit}</small></div></article>)}</div>
       </section>
 
       <section className="process section-pad">
