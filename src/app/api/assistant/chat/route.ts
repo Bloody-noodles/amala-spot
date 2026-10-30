@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { menuItems } from "@/lib/menu";
+import { getSupabaseAdminConfig, supabaseAdminHeaders } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -39,11 +40,26 @@ export async function POST(request: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return NextResponse.json({ error: "The assistant is not connected yet. Add the Gemini API key in the Vercel project settings." }, { status: 503 });
 
-    const catalogue = menuItems.map(item => ({
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      description: item.description,
+    let liveMenu = menuItems;
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+      const { url, key } = getSupabaseAdminConfig();
+      const headers = supabaseAdminHeaders(key);
+      const [categoriesResponse, itemsResponse, optionsResponse] = await Promise.all([
+        fetch(`${url}/rest/v1/menu_categories?select=id,name&is_active=eq.true`, { headers, cache: "no-store" }),
+        fetch(`${url}/rest/v1/menu_items?select=id,category_id,name,description,price_kobo&is_available=eq.true`, { headers, cache: "no-store" }),
+        fetch(`${url}/rest/v1/menu_item_options?select=id,menu_item_id,label,price_kobo&is_available=eq.true`, { headers, cache: "no-store" })
+      ]);
+      if (!categoriesResponse.ok || !itemsResponse.ok || !optionsResponse.ok) throw new Error("Live menu could not be loaded.");
+      const [categories, items, options] = await Promise.all([categoriesResponse.json(), itemsResponse.json(), optionsResponse.json()]);
+      const categoryNames = new Map(categories.map((category: { id: string; name: string }) => [category.id, category.name]));
+      liveMenu = items.map((item: { id: string; category_id: string; name: string; description: string; price_kobo: number }) => ({
+        id: item.id, name: item.name, category: categoryNames.get(item.category_id) || "Menu",
+        description: item.description, priceKobo: Number(item.price_kobo),
+        options: options.filter((option: { menu_item_id: string }) => option.menu_item_id === item.id).map((option: { id: string; label: string; price_kobo: number }) => ({ id: option.id, label: option.label, priceKobo: Number(option.price_kobo) }))
+      }));
+    }
+    const catalogue = liveMenu.map(item => ({
+      id: item.id, name: item.name, category: item.category, description: item.description,
       priceNaira: item.priceKobo / 100,
       extras: item.options.map(option => ({ id: option.id, name: option.label, priceNaira: option.priceKobo / 100 }))
     }));
@@ -86,7 +102,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     const result = await response.json();
     const raw = result.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? "").join("") ?? "";
     const decoded = JSON.parse(raw);
-    const allowed = new Set(menuItems.map(item => item.id));
+    const allowed = new Set(liveMenu.map(item => item.id));
     const suggestions = Array.isArray(decoded.suggestions)
       ? decoded.suggestions.filter((entry: { itemId?: string; quantity?: number }) =>
           typeof entry.itemId === "string" && allowed.has(entry.itemId) &&
