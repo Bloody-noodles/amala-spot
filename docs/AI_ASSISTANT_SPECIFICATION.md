@@ -25,6 +25,7 @@ The assistant endpoint returns structured actions, never direct database mutatio
 - `add`: add a catalogue item, quantity, and verified option IDs.
 - `remove`: remove a quantity from an exact existing basket line.
 - `set_quantity`: set the quantity on an exact existing basket line; zero removes it.
+- `update_options`: add/remove extras on an existing line without accidentally creating a second plate.
 - `clear`: clear the basket only on explicit customer instruction.
 - `checkout`: open the existing checkout form only on explicit customer intent.
 
