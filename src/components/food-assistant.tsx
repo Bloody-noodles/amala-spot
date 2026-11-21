@@ -7,7 +7,7 @@ type Message = { role: "user" | "assistant"; content: string };
 type CartLine = { itemId: string; quantity: number; options: string[] };
 type CallState = "idle" | "listening" | "thinking" | "speaking";
 export type VoiceCartAction = {
-  type: "add" | "remove" | "set_quantity" | "clear" | "checkout";
+  type: "add" | "remove" | "set_quantity" | "update_options" | "clear" | "checkout";
   itemId: string;
   quantity: number;
   optionIds: string[];
