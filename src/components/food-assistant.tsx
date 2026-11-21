@@ -2,7 +2,6 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowUp, Bot, Phone, PhoneOff, ShoppingBag, Sparkles, X } from "lucide-react";
-import { formatNaira, type MenuItem } from "@/lib/menu";
 
 type Message = { role: "user" | "assistant"; content: string };
 type CartLine = { itemId: string; quantity: number; options: string[] };
