@@ -194,7 +194,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
     if (call.name === "clear_basket") {
       const latestUser = messagesRef.current.filter(message => message.role === "user").at(-1)?.content.toLowerCase() ?? "";
       const latestAssistant = messagesRef.current.filter(message => message.role === "assistant").at(-1)?.content.toLowerCase() ?? "";
-      const confirmed = /(yes|yeah|confirm|go ahead|clear it|empty it)/i.test(latestUser) && /(clear|empty).*(basket|cart)|(basket|cart).*(clear|empty)/i.test(latestAssistant);
+      const confirmed = /(yes|yeah|confirm|go ahead|clear it|empty it)/i.test(latestUser) && /(clear|empty).*(basket|cart)|(basket|cart).*(clear|empty)|(clear|empty) it/i.test(latestAssistant);
       if (!confirmed) { fail("Ask the customer to confirm clearing the entire basket before doing it."); return; }
       const action: VoiceCartAction = { type: "clear", itemId: "", quantity: 0, optionIds: [] };
       onCartActions([action]); cartRef.current = [];
