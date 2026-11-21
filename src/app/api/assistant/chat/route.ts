@@ -30,9 +30,10 @@ const responseSchema = {
           type: { type: "STRING" },
           itemId: { type: "STRING" },
           quantity: { type: "INTEGER" },
-          optionIds: { type: "ARRAY", items: { type: "STRING" } }
+          optionIds: { type: "ARRAY", items: { type: "STRING" } },
+          previousOptionIds: { type: "ARRAY", items: { type: "STRING" } }
         },
-        required: ["type", "itemId", "quantity", "optionIds"]
+        required: ["type", "itemId", "quantity", "optionIds", "previousOptionIds"]
       }
     }
   },
@@ -45,8 +46,8 @@ type LiveMenuItem = {
   priceKobo: number; options: MenuOption[];
 };
 type AssistantAction = {
-  type: "add" | "remove" | "set_quantity" | "clear" | "checkout";
-  itemId: string; quantity: number; optionIds: string[];
+  type: "add" | "remove" | "set_quantity" | "update_options" | "clear" | "checkout";
+  itemId: string; quantity: number; optionIds: string[]; previousOptionIds?: string[];
   itemName?: string; optionLabels?: string[];
 };
 
@@ -154,9 +155,10 @@ Return actions only when the customer clearly instructs you to change the basket
 - add: add the exact catalogue item and requested quantity. Include selected extra IDs when requested. If quantity is not stated, use 1.
 - remove: remove the requested quantity from an exact existing basket line. If the customer says remove/delete the item entirely, use the current line quantity.
 - set_quantity: set an exact existing basket line to the requested quantity; quantity 0 removes that line.
+- update_options: change extras on an exact existing basket line. Copy its current optionIds into previousOptionIds and return the complete desired extras list in optionIds. Use this when the customer asks to add/remove an extra from an existing plate, not to add another plate.
 - clear: empty the entire basket only when the customer explicitly asks.
 - checkout: open the existing checkout form only when the customer explicitly says they are ready to check out, place or confirm the order. Do not submit the order.
-For every action always provide all four fields: type, itemId, quantity, optionIds. For clear and checkout use itemId "" and quantity 0 and optionIds [].
+For every action always provide type, itemId, quantity, optionIds, and previousOptionIds. For add/remove/set_quantity/clear/checkout, use previousOptionIds []. For clear and checkout use itemId "" and quantity 0 and optionIds [].
 Use the exact item and option IDs from the catalogue and current basket. Do not guess IDs. For removal/quantity changes, copy optionIds from the exact basket line. If the customer asks for an extra that is not available on that dish, explain and ask whether they want another listed option; do not silently substitute.
 ORDER CONFIRMATION:
 After adding/removing/changing items, clearly confirm what changed and give the current basket total when possible. For checkout, summarise the basket and tell the customer the checkout form is opening. The customer must enter their details and press the final confirmation button. Never claim an order has been submitted, saved, paid for or sent to a restaurant.
@@ -242,23 +244,25 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     for (const rawAction of rawActions.slice(0, 8)) {
       if (!rawAction || typeof rawAction !== "object") continue;
       const candidate = rawAction as {
-        type?: unknown; itemId?: unknown; quantity?: unknown; optionIds?: unknown;
+        type?: unknown; itemId?: unknown; quantity?: unknown; optionIds?: unknown; previousOptionIds?: unknown;
       };
       const type = candidate.type;
       const itemId = typeof candidate.itemId === "string" ? candidate.itemId : "";
       const quantity = typeof candidate.quantity === "number" ? candidate.quantity : -1;
       const optionIds = Array.isArray(candidate.optionIds) && candidate.optionIds.every((value: unknown) => typeof value === "string")
         ? candidate.optionIds as string[] : [];
+      const previousOptionIds = Array.isArray(candidate.previousOptionIds) && candidate.previousOptionIds.every((value: unknown) => typeof value === "string")
+        ? candidate.previousOptionIds as string[] : [];
 
       if (type === "clear") {
-        if (clearIntent && parsed.data.cart.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [] });
+        if (clearIntent && parsed.data.cart.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [], previousOptionIds: [] });
         continue;
       }
       if (type === "checkout") {
-        if (checkoutIntent && basket.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [] });
+        if (checkoutIntent && basket.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [], previousOptionIds: [] });
         continue;
       }
-      if (type !== "add" && type !== "remove" && type !== "set_quantity") continue;
+      if (type !== "add" && type !== "remove" && type !== "set_quantity" && type !== "update_options") continue;
 
       const item = liveMenu.find(entry => entry.id === itemId);
       if (!item) {
@@ -273,7 +277,21 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
       if (type === "add") {
         if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10) continue;
         const optionLabels = optionIds.map(id => item.options.find(option => option.id === id)!.label);
-        actions.push({ type, itemId, quantity, optionIds, itemName: item.name, optionLabels });
+        actions.push({ type, itemId, quantity, optionIds, previousOptionIds: [], itemName: item.name, optionLabels });
+        continue;
+      }
+
+      if (type === "update_options") {
+        const matchingLine = parsed.data.cart.find(line => line.itemId === itemId && sameOptions(line.options, previousOptionIds));
+        if (!matchingLine) {
+          actionIssues.push("I could not find the selected " + item.name + " basket line to customise.");
+          continue;
+        }
+        if (new Set(previousOptionIds).size !== previousOptionIds.length || previousOptionIds.some(id => !item.options.some(option => option.id === id))) {
+          actionIssues.push("I could not verify the current extras on " + item.name + ", so I left it unchanged.");
+          continue;
+        }
+        actions.push({ type, itemId, quantity: matchingLine.quantity, optionIds, previousOptionIds, itemName: item.name, optionLabels: optionIds.map(id => item.options.find(option => option.id === id)!.label) });
         continue;
       }
 
@@ -284,10 +302,10 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
       }
       if (type === "remove") {
         if (!Number.isInteger(quantity) || quantity < 1) continue;
-        actions.push({ type, itemId, quantity: Math.min(quantity, matchingLine.quantity), optionIds, itemName: item.name });
+        actions.push({ type, itemId, quantity: Math.min(quantity, matchingLine.quantity), optionIds, previousOptionIds: [], itemName: item.name });
       } else {
         if (!Number.isInteger(quantity) || quantity < 0 || quantity > 20) continue;
-        actions.push({ type, itemId, quantity, optionIds, itemName: item.name });
+        actions.push({ type, itemId, quantity, optionIds, previousOptionIds: [], itemName: item.name });
       }
     }
 
