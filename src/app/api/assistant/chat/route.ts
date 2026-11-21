@@ -128,14 +128,19 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
       }
     }
 
-    if (!response || !response.ok) {
-      const status = response?.status;
-      if (status === 429 || status === 503 || !response) {
-        if (response) console.error("Gemini assistant models unavailable:", status, await response.text());
-        else console.error("All Gemini assistant attempts failed:", lastFailure);
+    if (!response) {
+      console.error("All Gemini assistant attempts failed:", lastFailure);
+      return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
+    }
+
+    if (!response.ok) {
+      const status = response.status;
+      const providerMessage = await response.text();
+      if (status === 429 || status === 503) {
+        console.error("Gemini assistant models unavailable:", status, providerMessage);
         return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
       }
-      console.error("Gemini request failed:", status, await response.text());
+      console.error("Gemini request failed:", status, providerMessage);
       return NextResponse.json({ error: "The assistant could not respond just now. Please try again." }, { status: 502 });
     }
 
