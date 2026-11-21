@@ -207,7 +207,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
       respond({ ok: true, message: "Opening the existing checkout form. The customer must review and submit it themselves.", basket: snapshot() });
       cleanupCall(); onOpenCheckout(); return;
     }
-    if (!item || quantity < 0 || quantity > 20 || !validOptions(item, optionIds)) {
+    if (!item || (call.name !== "update_basket_options" && (quantity < 0 || quantity > 20)) || !validOptions(item, optionIds)) {
       fail("The menu item, quantity or extras are invalid. Ask the customer to choose from the current menu."); return;
     }
     if (call.name === "add_to_basket") {
