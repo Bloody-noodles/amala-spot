@@ -2,7 +2,7 @@ name: Quality checks
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/gemini-live-native-audio]
   pull_request:
     branches: [main]
 
