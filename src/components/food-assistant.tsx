@@ -107,7 +107,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
   const audioRef = useRef<AudioContext | null>(null), processorRef = useRef<ScriptProcessorNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const playbackRef = useRef<Set<AudioBufferSourceNode>>(new Set());
-  const nextPlaybackRef = useRef(0), setupReadyRef = useRef(false), callActiveRef = useRef(false);
+  const nextPlaybackRef = useRef(0), setupReadyRef = useRef(false), callActiveRef = useRef(false), modelTurnCompleteRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { cartRef.current = cart; }, [cart]);
@@ -123,6 +123,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
   const stopPlayback = () => {
     playbackRef.current.forEach(source => { try { source.stop(); } catch { /* already stopped */ } });
     playbackRef.current.clear(); nextPlaybackRef.current = audioRef.current?.currentTime ?? 0;
+    if (callActiveRef.current) setCallState("listening");
   };
   const cleanupCall = () => {
     callActiveRef.current = false; setupReadyRef.current = false; setCallActive(false);
@@ -248,9 +249,13 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
     const buffer = context.createBuffer(1, samples.length, 24000), channel = buffer.getChannelData(0);
     for (let i = 0; i < samples.length; i++) channel[i] = samples[i] / (samples[i] < 0 ? 32768 : 32767);
     const source = context.createBufferSource(); source.buffer = buffer; source.connect(context.destination);
+    modelTurnCompleteRef.current = false;
     const startAt = Math.max(context.currentTime + 0.015, nextPlaybackRef.current);
     source.start(startAt); nextPlaybackRef.current = startAt + buffer.duration;
-    playbackRef.current.add(source); source.onended = () => playbackRef.current.delete(source);
+    playbackRef.current.add(source); source.onended = () => {
+      playbackRef.current.delete(source);
+      if (playbackRef.current.size === 0 && modelTurnCompleteRef.current && callActiveRef.current) setCallState("listening");
+    };
     setCallState("speaking");
   };
 
@@ -316,7 +321,10 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
           if (part.text) appendMessage("assistant", part.text);
         }
         for (const call of message.toolCall?.functionCalls ?? []) executeTool(call);
-        if (content?.turnComplete && playbackRef.current.size === 0) setCallState("listening");
+        if (content?.turnComplete) {
+          modelTurnCompleteRef.current = true;
+          if (playbackRef.current.size === 0) setCallState("listening");
+        }
         if (message.goAway) setError("This voice session is nearing its time limit. End the call and reconnect to continue.");
       };
       socket.onerror = () => { if (callActiveRef.current) setError("The live voice connection had a problem. Please reconnect or use text chat."); };
