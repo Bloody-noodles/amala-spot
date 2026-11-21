@@ -112,8 +112,12 @@ export function FoodAssistant({
         }
       };
       instance.onend = () => {
+        if (recognition.current !== instance) return;
+        recognition.current = null;
         if (callActiveRef.current && !busyRef.current && callStateRef.current === "listening") {
-          window.setTimeout(() => startListeningRef.current?.(), 350);
+          window.setTimeout(() => {
+            if (!recognition.current) startListeningRef.current?.();
+          }, 350);
         }
       };
       updateCallState("listening");
