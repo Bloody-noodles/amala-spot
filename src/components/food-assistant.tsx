@@ -13,6 +13,7 @@ export type VoiceCartAction = {
   optionIds: string[];
   itemName?: string;
   optionLabels?: string[];
+  previousOptionIds?: string[];
 };
 
 type SpeechRecognitionResultLike = { [index: number]: { transcript: string }; length: number };
