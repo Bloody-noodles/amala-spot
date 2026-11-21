@@ -237,6 +237,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
     const actions: AssistantAction[] = [];
     const actionIssues: string[] = [];
     const checkoutIntent = /\b(check ?out|place (my )?order|submit (my )?order|confirm (my )?order|ready to order|ready to place)\b/i.test(latestMessage);
+    const clearIntent = /\b(clear|empty|wipe|remove everything|start over)\b.*\b(basket|cart)\b|\b(basket|cart)\b.*\b(clear|empty|wipe)\b/i.test(latestMessage);
 
     for (const rawAction of rawActions.slice(0, 8)) {
       if (!rawAction || typeof rawAction !== "object") continue;
@@ -250,7 +251,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
         ? candidate.optionIds as string[] : [];
 
       if (type === "clear") {
-        if (parsed.data.cart.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [] });
+        if (clearIntent && parsed.data.cart.length > 0) actions.push({ type, itemId: "", quantity: 0, optionIds: [] });
         continue;
       }
       if (type === "checkout") {
