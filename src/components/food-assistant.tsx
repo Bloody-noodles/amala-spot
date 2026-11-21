@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { ArrowUp, Bot, Mic, Phone, PhoneOff, Plus, Sparkles, X } from "lucide-react";
+import { ArrowUp, Bot, Phone, PhoneOff, ShoppingBag, Sparkles, X } from "lucide-react";
 import { formatNaira, type MenuItem } from "@/lib/menu";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -157,7 +157,7 @@ export function FoodAssistant({
       const actions: VoiceCartAction[] = Array.isArray(data.actions) ? data.actions : [];
       const cartActions = actions.filter(action => action.type !== "checkout");
       if (cartActions.length) onCartActions(cartActions);
-      if (actions.some(action => action.type === "checkout")) onOpenCheckout();
+      if (actions.some(action => action.type === "checkout")) { endCall(); onOpenCheckout(); }
 
       const updatedMessages = [...messagesRef.current, { role: "assistant" as const, content: answer }].slice(-12);
       messagesRef.current = updatedMessages;
@@ -262,7 +262,7 @@ export function FoodAssistant({
 
       {error && <p className="food-assistant-error" role="alert">{error}</p>}
       <div className="food-assistant-tools">
-        <span><ShoppingBagIcon /> {cartCount} {cartCount === 1 ? "ITEM" : "ITEMS"} IN BASKET</span>
+        <span><ShoppingBag size={14}/> {cartCount} {cartCount === 1 ? "ITEM" : "ITEMS"} IN BASKET</span>
         <small>{callActive ? callCopy[callState] : "VOICE OR TEXT"}</small>
       </div>
       <form className="food-assistant-compose" onSubmit={submit}>
