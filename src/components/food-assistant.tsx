@@ -26,7 +26,7 @@ export function FoodAssistant({ onAddItem, cart }: { onAddItem: (itemId: string,
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hey! I'm your Amala Spot food guide. Tell me what you're craving, and we'll find something good." }
+    { role: "assistant", content: "How far? Wetin you dey feel like eating today? Tell me the kind of food you want, make we find something correct." }
   ]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [busy, setBusy] = useState(false);
@@ -34,6 +34,7 @@ export function FoodAssistant({ onAddItem, cart }: { onAddItem: (itemId: string,
   const [listening, setListening] = useState(false);
   const [voiceReplies, setVoiceReplies] = useState(false);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
+  const [speechVoices, setSpeechVoices] = useState<SpeechSynthesisVoice[]>([]);
   const setMenuSnapshot = async () => {
     const response = await fetch("/api/menu", { cache: "no-store" });
     if (!response.ok) throw new Error("The live menu could not be refreshed. Please use the menu to add this item.");
@@ -47,8 +48,12 @@ export function FoodAssistant({ onAddItem, cart }: { onAddItem: (itemId: string,
   useEffect(() => {
     const speechWindow = window as SpeechWindow;
     setVoiceAvailable(Boolean(speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition));
+    const refreshVoices = () => setSpeechVoices(window.speechSynthesis?.getVoices() ?? []);
+    refreshVoices();
+    window.speechSynthesis?.addEventListener("voiceschanged", refreshVoices);
     return () => {
       recognition.current?.stop();
+      window.speechSynthesis?.removeEventListener("voiceschanged", refreshVoices);
       window.speechSynthesis?.cancel();
     };
   }, []);
@@ -80,7 +85,25 @@ export function FoodAssistant({ onAddItem, cart }: { onAddItem: (itemId: string,
       setSuggestions(nextSuggestions);
       if (voiceReplies && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(answer));
+        const utterance = new SpeechSynthesisUtterance(answer);
+        const isLikelyMaleVoice = (voice: SpeechSynthesisVoice) =>
+          /\b(male|david|mark|daniel|james|george|thomas|aaron|guy|ryan|fred|alex|liam|oliver|nathan|andrew)\b/i.test(voice.name);
+        const maleVoices = speechVoices.filter(isLikelyMaleVoice);
+        const preferredMaleVoice =
+          maleVoices.find(voice => /^en-NG/i.test(voice.lang)) ??
+          maleVoices.find(voice => /^en-GB/i.test(voice.lang)) ??
+          maleVoices.find(voice => /^en-US/i.test(voice.lang)) ??
+          maleVoices[0];
+        if (preferredMaleVoice) {
+          utterance.voice = preferredMaleVoice;
+          utterance.lang = preferredMaleVoice.lang;
+        } else {
+          utterance.lang = "en-NG";
+        }
+        utterance.rate = 0.97;
+        utterance.pitch = 0.92;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
       }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Please try again.");
