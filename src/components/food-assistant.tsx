@@ -284,9 +284,11 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
         setup: {
           model: "models/" + LIVE_MODEL,
           generationConfig: {
-            responseModalities: ["AUDIO"], inputAudioTranscription: {}, outputAudioTranscription: {}, speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE_NAME } } },
+            responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE_NAME } } },
             temperature: 0.65, maxOutputTokens: 512
           },
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
           systemInstruction: { parts: [{ text: makeSystemInstruction(menuRef.current, cartRef.current) }] },
           tools
         }
