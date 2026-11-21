@@ -201,7 +201,11 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
     }
     if (call.name === "open_checkout") {
       const latestUser = messagesRef.current.filter(message => message.role === "user").at(-1)?.content.toLowerCase() ?? "";
-      if (!currentCart.length || !/(checkout|check out|proceed|finish.*order|place.*order|ready.*order)/i.test(latestUser)) {
+      const latestAssistant = messagesRef.current.filter(message => message.role === "assistant").at(-1)?.content.toLowerCase() ?? "";
+      const directIntent = /(checkout|check out|proceed|finish.*order|place.*order|ready.*order)/i.test(latestUser);
+      const confirmedIntent = /(yes|yeah|okay|ok|go ahead|let's do it|do it|sure)/i.test(latestUser) &&
+        /(checkout|check out|proceed|finish.*order|place.*order)/i.test(latestAssistant);
+      if (!currentCart.length || (!directIntent && !confirmedIntent)) {
         fail("The customer must explicitly ask to proceed to checkout, and the basket must not be empty."); return;
       }
       respond({ ok: true, message: "Opening the existing checkout form. The customer must review and submit it themselves.", basket: snapshot() });
@@ -349,7 +353,16 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
 
   useEffect(() => {
     setVoiceSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.WebSocket && window.AudioContext));
-    return () => cleanupCall();
+    return () => {
+      callActiveRef.current = false;
+      setupReadyRef.current = false;
+      try { processorRef.current?.disconnect(); } catch { /* no-op */ }
+      try { sourceRef.current?.disconnect(); } catch { /* no-op */ }
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      if (socketRef.current && socketRef.current.readyState < WebSocket.CLOSING) socketRef.current.close();
+      playbackRef.current.forEach(source => { try { source.stop(); } catch { /* no-op */ } });
+      void audioRef.current?.close();
+    };
   }, []);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [messages, busy]);
   const cartCount = cart.reduce((sum, line) => sum + line.quantity, 0);
