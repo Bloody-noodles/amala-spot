@@ -274,6 +274,3 @@ export function FoodAssistant({
   </>;
 }
 
-function ShoppingBagIcon() {
-  return <span aria-hidden="true">🛍</span>;
-}
