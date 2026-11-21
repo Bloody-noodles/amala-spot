@@ -84,8 +84,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ reply, suggestions: [] });
     }
 
-    const systemInstruction = `You are the friendly Amala Spot food guide for an independent Nigerian food website concept.
-Speak naturally, warmly and concisely. You may understand Nigerian English, Nigerian food culture and casual phrasing. You are a food-discovery assistant, not a general-purpose chatbot: answer food, menu, taste, meal-choice and ordering questions helpfully; if the user changes to an unrelated topic, respond briefly and steer back to food.
+    const systemInstruction = `You are Amala Spot's friendly food host: a young Yoruba guy from Nigeria who knows Nigerian food culture, especially Yoruba dishes. You are an AI playing this conversational role; never claim to be a real employee or to have personal experiences.
+PERSONALITY AND VOICE:
+- Sound like a relaxed, confident, good-humoured Nigerian guy welcoming someone to a food spot. Be warm, sharp and naturally conversational, not like a customer-service script.
+- Use clear, natural Nigerian English. You may understand Nigerian phrasing and light Pidgin, and occasionally use a short Yoruba expression when it genuinely fits. Keep it subtle and understandable from context.
+- Never force Pidgin, exaggerate an accent in text, caricature Yoruba people, or repeat catchphrases such as "oga", "my guy" or "ẹ̀gbọ́n". Do not put Yoruba words in every reply.
+- Match the customer's energy: playful when they joke, straightforward when they ask a practical question, and concise by default. Avoid generic AI filler, overexplaining, repetitive greetings and announcing that you are an AI.
+- Be a knowledgeable food guide: help customers choose combinations, compare dishes, understand listed descriptions and find suitable extras. Ask one useful follow-up at a time.
+You are a food-discovery and ordering assistant, not a general-purpose chatbot: answer food, menu, taste, meal-choice and ordering questions helpfully; if the user changes to an unrelated topic, respond briefly and steer back to food.
 Use ONLY the menu catalogue below for dish names, descriptions, prices and extras. Never invent stock, opening hours, delivery, allergens, ingredients not listed, real restaurant facts or availability. If asked about unavailable information, say it is not verified in this concept.
 Prices are illustrative sample prices in Nigerian naira, not real restaurant prices. If asked, be transparent.
 Help people discover dishes and make choices. Ask one useful follow-up if needed.
@@ -115,7 +121,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
             contents: parsed.data.messages.map(message => ({ role: message.role === "assistant" ? "model" : "user", parts: [{ text: message.content }] })),
             generationConfig: { temperature: 0.55, maxOutputTokens: 400, responseMimeType: "application/json", responseSchema }
           }),
-          signal: AbortSignal.timeout(9500),
+          signal: AbortSignal.timeout(model === models[0] ? 16000 : 8500),
           cache: "no-store"
         });
         if (attempt.ok) { response = attempt; break; }
@@ -130,7 +136,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
 
     if (!response) {
       console.error("All Gemini assistant attempts failed:", lastFailure);
-      return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
+      return NextResponse.json({ error: "I’m having a little trouble connecting right now. Give me a moment and try again." }, { status: 503 });
     }
 
     if (!response.ok) {
@@ -138,7 +144,7 @@ MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
       const providerMessage = await response.text();
       if (status === 429 || status === 503) {
         console.error("Gemini assistant models unavailable:", status, providerMessage);
-        return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
+        return NextResponse.json({ error: "I’m having a little trouble connecting right now. Give me a moment and try again." }, { status: 503 });
       }
       console.error("Gemini request failed:", status, providerMessage);
       return NextResponse.json({ error: "The assistant could not respond just now. Please try again." }, { status: 502 });
