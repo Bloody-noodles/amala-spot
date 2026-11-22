@@ -131,6 +131,10 @@ export async function POST(request: Request) {
       : "Your basket is currently empty.";
     const latestMessage = parsed.data.messages.at(-1)?.content ?? "";
 
+    if (/^(?:hi|hello|hey|good morning|good afternoon|good evening|how are you(?: doing)?)[!.?,\\s]*$/i.test(latestMessage.trim())) {
+      return NextResponse.json({ reply: "Hello! Welcome to Amala Spot. What are you in the mood for today?", actions: [] });
+    }
+
     if (/\b(basket|cart|order)\b/i.test(latestMessage) && /\b(what|which|how much|total|currently|in|have|show|contents|items?|summary|read back)\b/i.test(latestMessage)) {
       const reply = basket.length
         ? `Here's what's in your basket: ${basketText}. Your current total is ₦${(basketTotalKobo / 100).toLocaleString("en-NG")}.`
