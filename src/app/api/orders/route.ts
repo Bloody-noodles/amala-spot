@@ -9,6 +9,7 @@ const requestSchema = z.object({
     email: z.union([z.string().email().max(254),z.literal("")]).optional(),
     note: z.string().max(500).optional()
   }),
+  paymentSimulation: z.literal(true),
   items: z.array(z.object({
     itemId: z.string().min(1),
     quantity: z.number().int().min(1).max(20),
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "We couldn't save this order. Please review the details and try again." }, { status: 503 });
       }
       const savedOrder = await databaseResponse.json();
-      return NextResponse.json({ ...savedOrder, mode: "saved" }, { status: 201 });
+      return NextResponse.json({ ...savedOrder, mode: "saved", paymentMode: "simulated" }, { status: 201 });
     }
     let totalKobo = 0;
     const lines = [];
@@ -61,7 +62,8 @@ export async function POST(request: Request) {
       reference,totalKobo,customerName:parsed.data.customer.name,
       items:lines,
       mode: "demo",
-      message:"This is a demonstration summary only. It has not been saved, sent to a restaurant, or paid for. Connect Supabase to enable database persistence."
+      paymentMode: "simulated",
+      message:"This is a demonstration order summary only. No real payment was processed and no restaurant fulfilment will occur. Connect Supabase to enable database persistence."
     },{status:201});
   } catch {
     return NextResponse.json({error:"Unable to prepare the demo order right now."},{status:400});
