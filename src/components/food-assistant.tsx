@@ -360,7 +360,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
   };
 
   useEffect(() => {
-    setVoiceSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.WebSocket && window.AudioContext));
+    setVoiceSupported(Boolean(navigator.mediaDevices?.getUserMedia));
     return () => {
       callActiveRef.current = false;
       setupReadyRef.current = false;
