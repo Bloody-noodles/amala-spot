@@ -179,46 +179,89 @@ CURRENT BASKET: ${JSON.stringify(basket.map(line => ({
     })))}
 MENU CATALOGUE: ${JSON.stringify(catalogue)}`;
 
-    const models = ["gemini-3.5-flash-lite", "gemini-3.8-flash"];
+    const models = [
+      { name: "gemini-3.5-flash-lite", timeoutMs: 7000, retry503: true },
+      { name: "gemini-3.8-flash", timeoutMs: 9000, retry503: false }
+    ];
     let response: Response | null = null;
-    let lastFailure = "provider";
+    let lastFailure: "provider" | "timeout" | "network" = "provider";
+    let lastProviderStatus: number | null = null;
+    let lastProviderMessage = "";
+
     for (const model of models) {
-      try {
-        const attempt = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            contents: parsed.data.messages.map(message => ({
-              role: message.role === "assistant" ? "model" : "user",
-              parts: [{ text: message.content }]
-            })),
-            generationConfig: {
-              temperature: 0.35,
-              maxOutputTokens: 500,
-              responseMimeType: "application/json",
-              responseSchema
-            }
-          }),
-          signal: AbortSignal.timeout(model === models[0] ? 16000 : 8500),
-          cache: "no-store"
-        });
-        if (attempt.ok) { response = attempt; break; }
-        if (attempt.status !== 429 && attempt.status !== 503) { response = attempt; break; }
-        lastFailure = "unavailable";
-        console.warn(`Gemini model ${model} returned ${attempt.status}; trying fallback.`);
-      } catch (error) {
-        lastFailure = "network or timeout";
-        console.warn(`Gemini model ${model} failed before responding; trying fallback.`, error);
+      const maxAttempts = model.retry503 ? 2 : 1;
+      for (let attemptIndex = 0; attemptIndex < maxAttempts; attemptIndex++) {
+        try {
+          const attempt = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model.name}:generateContent`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              contents: parsed.data.messages.map(message => ({
+                role: message.role === "assistant" ? "model" : "user",
+                parts: [{ text: message.content }]
+              })),
+              generationConfig: {
+                temperature: 0.35,
+                maxOutputTokens: 500,
+                responseMimeType: "application/json",
+                responseSchema
+              }
+            }),
+            signal: AbortSignal.timeout(model.timeoutMs),
+            cache: "no-store"
+          });
+
+          if (attempt.ok) {
+            response = attempt;
+            break;
+          }
+
+          if (attempt.status !== 429 && attempt.status !== 503) {
+            response = attempt;
+            break;
+          }
+
+          lastProviderStatus = attempt.status;
+          lastProviderMessage = (await attempt.text()).slice(0, 1200);
+          lastFailure = "provider";
+          console.warn(`Gemini model ${model.name} returned ${attempt.status} (attempt ${attemptIndex + 1}/${maxAttempts}).`);
+
+          if (attempt.status === 503 && attemptIndex + 1 < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 450));
+            continue;
+          }
+
+          response = new Response(lastProviderMessage, {
+            status: attempt.status,
+            headers: { "Content-Type": "application/json" }
+          });
+          break;
+        } catch (error) {
+          lastFailure = error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network";
+          console.warn(`Gemini model ${model.name} failed before responding (${lastFailure}); trying fallback when available.`);
+          break;
+        }
       }
+
+      if (response?.ok || (response && response.status !== 429 && response.status !== 503)) break;
+      if (response?.status === 429 || response?.status === 503) response = null;
     }
 
     if (!response || !response.ok) {
-      const status = response?.status;
+      const status = response?.status ?? lastProviderStatus;
       if (status === 429 || status === 503 || !response) {
-        if (response) console.error("Gemini assistant models unavailable:", status, await response.text());
-        else console.error("All Gemini assistant attempts failed:", lastFailure);
-        return NextResponse.json({ error: "Amala AI is experiencing heavy demand. Please try again in a moment." }, { status: 503 });
+        console.error("Gemini assistant attempts exhausted:", {
+          status,
+          lastFailure,
+          providerMessage: lastProviderMessage || undefined
+        });
+        const errorMessage = status === 429
+          ? "The assistant has reached a temporary usage limit. Please try again shortly."
+          : lastFailure === "timeout" || lastFailure === "network"
+            ? "I'm having trouble connecting to the assistant right now. Please try again in a moment."
+            : "The assistant is temporarily unavailable. Please try again shortly.";
+        return NextResponse.json({ error: errorMessage }, { status: 503 });
       }
       console.error("Gemini request failed:", status, await response.text());
       return NextResponse.json({ error: "The assistant could not respond just now. Please try again." }, { status: 502 });
