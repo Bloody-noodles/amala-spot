@@ -52,7 +52,7 @@ export async function POST() {
     }
 
     return NextResponse.json(
-      { token: payload.name, model: LIVE_MODEL.replace(/^models\\//, ""), expiresAt: payload.expireTime ?? null },
+      { token: payload.name, model: LIVE_MODEL.slice("models/".length), expiresAt: payload.expireTime ?? null },
       { headers: { "Cache-Control": "no-store, max-age=0" } }
     );
   } catch (error) {
