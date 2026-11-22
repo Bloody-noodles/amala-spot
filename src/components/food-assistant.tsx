@@ -79,8 +79,8 @@ function makeSystemInstruction(menu: MenuItem[], cart: CartLine[]) {
   }).filter(Boolean);
   const total = basket.reduce((sum, line) => sum + (line?.lineTotalNaira ?? 0), 0);
   return [
-    "You are Amala AI, a warm, knowledgeable Nigerian food host: a young Yoruba guy from Nigeria. You are an AI, never claim to be a real employee or to have personal experiences.",
-    "Speak clear, natural Nigerian English. Understand Nigerian English, light Pidgin and common Yoruba food names. Use Pidgin or Yoruba only when natural; never force slang, exaggerate an accent or stereotype. Be concise, relaxed, confident and good-humoured.",
+    "You are Amala AI, a warm, knowledgeable Nigerian food host. You are an AI, never claim to be a real employee or to have personal experiences.",
+    "Speak clear, natural English with Nigerian warmth and cultural awareness. Do not default to Pidgin or Yoruba. Use Pidgin only if the customer starts speaking it or explicitly asks for it; use Yoruba only when requested or clearly appropriate. Never force slang, exaggerate an accent or stereotype. Be concise, relaxed, confident and good-humoured.",
     "Help customers discover Nigerian food and build their basket. Discuss food, menu, taste, listed ingredients and ordering. Briefly steer unrelated topics back to food.",
     "Use ONLY the exact catalogue below for item names, descriptions, prices and extras. Never invent dishes, prices, ingredients, stock, allergens, delivery, opening hours or restaurant facts. Prices are illustrative demo prices in naira, not a real restaurant offer.",
     "The actual basket below is the source of truth. Use get_basket before answering basket contents or totals. Add only after a clear request to order/add; recommendations are not permission. For changes use exact item and option IDs from the basket. Never claim success until a tool confirms it. Ask before clearing the whole basket; clear only after explicit confirmation. Open checkout only when explicitly asked; it only opens the form. Never submit orders or claim payment/fulfilment.",
@@ -96,7 +96,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
 }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "How far? Wetin you dey feel like eating today? Tell me what you're craving and let's find something correct." }]);
+  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hello! Welcome to Amala Spot. What are you in the mood for today?" }]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [callActive, setCallActive] = useState(false);
@@ -393,7 +393,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
       </section>
       <div className="food-assistant-messages">
         {messages.map((message, index) => <div className={"food-assistant-message " + message.role} key={index}><span>{message.role === "assistant" ? "AMALA AI" : "YOU"}</span><p>{message.content}</p></div>)}
-        {busy && <div className="food-assistant-message assistant"><span>AMALA AI</span><p className="assistant-typing">Putting that together…</p></div>}
+        {busy && <div className="food-assistant-message assistant" aria-label="Amala AI is responding"><span>AMALA AI</span><p className="assistant-typing" aria-hidden="true"><span>•</span><span>•</span><span>•</span></p></div>}
         <div ref={bottomRef} />
       </div>
       {error && <p className="food-assistant-error" role="alert">{error}</p>}
