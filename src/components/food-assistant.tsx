@@ -34,8 +34,8 @@ const tools = [{
     { name: "get_basket", description: "Read the customer's actual current basket and total before answering basket questions.", parameters: { type: "OBJECT", properties: {} } },
     { name: "add_to_basket", description: "Add an item only when the customer clearly asks to order or add it. A recommendation is not permission.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, quantity: { type: "INTEGER" }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "quantity", "option_ids"] } },
     { name: "remove_from_basket", description: "Remove quantity from an exact existing basket line. option_ids must match.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, quantity: { type: "INTEGER" }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "quantity", "option_ids"] } },
-    { name: "set_basket_quantity", description: "Set quantity on an exact existing basket line. Zero removes that line.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, quantity: { type: "INTEGER" }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "quantity", "option_ids"] } },
-    { name: "update_basket_options", description: "Change extras on an exact existing basket line.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, previous_option_ids: { type: "ARRAY", items: { type: "STRING" } }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "previous_option_ids", "option_ids"] } },
+    { name: "set_basket_quantity", description: "Set quantity on an exact existing basket line. Zero removes that line.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, quantity: { type: "INTEGER" }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "quantity", "option_ids"] },
+    { name: "update_basket_options", description: "Change extras on an exact existing basket line.", parameters: { type: "OBJECT", properties: { item_id: { type: "STRING" }, previous_option_ids: { type: "ARRAY", items: { type: "STRING" } }, option_ids: { type: "ARRAY", items: { type: "STRING" } } }, required: ["item_id", "previous_option_ids", "option_ids"] },
     { name: "clear_basket", description: "Clear the whole basket only after the customer explicitly confirms when asked.", parameters: { type: "OBJECT", properties: {} } },
     { name: "open_checkout", description: "Open the existing checkout form only when the customer explicitly asks. Never submit an order.", parameters: { type: "OBJECT", properties: {} } }
   ]
@@ -287,7 +287,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
       const tokenData = await response.json();
       if (!response.ok || typeof tokenData.token !== "string") throw new Error(tokenData.error || "The secure voice session could not be created.");
       if (!callActiveRef.current) return;
-      const socket = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained?access_token=" + encodeURIComponent(tokenData.token));
+      const socket = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained?access_token=" + encodeURIComponent(tokenData.token));
       socketRef.current = socket;
       socket.onopen = () => socket.send(JSON.stringify({
         setup: {
