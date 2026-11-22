@@ -26,9 +26,11 @@ export async function POST() {
         uses: 1,
         newSessionExpireTime: new Date(now + 60_000).toISOString(),
         expireTime: new Date(now + 20 * 60_000).toISOString(),
-        liveConnectConstraints: {
+        // The REST API accepts the Live setup under bidiGenerateContentSetup.
+        // The JS SDK maps liveConnectConstraints to this wire format.
+        bidiGenerateContentSetup: {
           model: LIVE_MODEL,
-          config: {
+          generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: {
               voiceConfig: {
