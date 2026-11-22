@@ -10,7 +10,7 @@ const requestSchema = z.object({
     note: z.string().max(500).optional()
   }),
   paymentSimulation: z.literal(true),
-  items: z.array(z.object({)
+  items: z.array(z.object({
     itemId: z.string().min(1),
     quantity: z.number().int().min(1).max(20),
     options: z.array(z.string()).max(10)
