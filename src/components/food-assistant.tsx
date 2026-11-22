@@ -268,7 +268,7 @@ export function FoodAssistant({ onCartActions, onOpenCheckout, cart, menu }: {
       const socket = socketRef.current;
       if (!callActiveRef.current || !setupReadyRef.current || socket?.readyState !== WebSocket.OPEN) return;
       const pcm = resampleTo16k(event.inputBuffer.getChannelData(0), context.sampleRate);
-      socket.send(JSON.stringify({ realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm;rate=16000", data: encodePcm16(pcm) }] } }));
+      socket.send(JSON.stringify({ realtimeInput: { audio: { mimeType: "audio/pcm;rate=16000", data: encodePcm16(pcm) } } }));
     };
     source.connect(processor); processor.connect(silent); silent.connect(context.destination);
     sourceRef.current = source; processorRef.current = processor;
