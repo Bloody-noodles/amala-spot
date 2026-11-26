@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
     { protocol: "https", hostname: "www.supermart.ng" },
     { protocol: "https", hostname: "images.afrizonemart.com" },
     { protocol: "https", hostname: "snapcalorie-webflow-website.s3.us-east-2.amazonaws.com" },
+    { protocol: "https", hostname: "margaretafrica.com" },
+    { protocol: "https", hostname: "nextcashandcarry.com.ng" },
+    { protocol: "https", hostname: "shalomafricanfoods.ca" },
+    { protocol: "https", hostname: "salvo1968.co.uk" },
+    { protocol: "https", hostname: "weststrate.nl" },
+    { protocol: "https", hostname: "www.drinksupermarket.com" },
+    { protocol: "https", hostname: "www.coca-cola.com" },
+    { protocol: "https", hostname: "www.bestwaywholesale.co.uk" },
+    { protocol: "https", hostname: "lochidsfoods.com" },
     { protocol: "https", hostname: "potily.com" }
   ] }
 };
