@@ -123,7 +123,7 @@ function checkMappedImages() {
     assert.ok(item.imageAlt?.trim(), `${item.id} needs image alt text`);
     if (item.image.startsWith("https://")) {
       const url = new URL(item.image);
-      const approvedHosts = new Set(["bottleking.ng", "www.supermart.ng", "images.afrizonemart.com", "snapcalorie-webflow-website.s3.us-east-2.amazonaws.com", "potily.com", "shalomafricanfoods.ca", "salvo1968.co.uk", "www.supermart.ng", "www.drinksupermarket.com", "weststrate.nl", "www.coca-cola.com", "www.bestwaywholesale.co.uk", "lochidsfoods.com"]);
+      const approvedHosts = new Set(["bottleking.ng", "www.supermart.ng", "images.afrizonemart.com", "snapcalorie-webflow-website.s3.us-east-2.amazonaws.com", "potily.com", "shalomafricanfoods.ca", "salvo1968.co.uk", "www.supermart.ng", "www.drinksupermarket.com", "weststrate.nl", "www.coca-cola.com", "www.bestwaywholesale.co.uk", "lochidsfoods.com", "nextcashandcarry.com.ng"]);
       assert.ok(approvedHosts.has(url.hostname), `${item.id} remote image host must be approved`);
       assert.ok(credits.includes(`| \`${item.id}\` |`), `${item.id} remote image needs a source row`);
       continue;
