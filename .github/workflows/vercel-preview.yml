@@ -17,8 +17,8 @@ jobs:
   preview:
     name: Build and deploy Preview only
     if: >-
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/design/banhmi-visual-refresh') ||
-      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'design/banhmi-visual-refresh')
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/amala-spot-upgrade') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/amala-spot-upgrade')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:

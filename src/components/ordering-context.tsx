@@ -12,7 +12,7 @@ type OrderingContextValue = {
   totalKobo: number;
   cartOpen: boolean;
   setCartOpen: (open: boolean) => void;
-  addItem: (itemId: string, quantity?: number, options?: string[]) => boolean;
+  addItem: (itemId: string, quantity?: number, options?: string[], openBasket?: boolean) => boolean;
   updateQuantity: (key: string, delta: number) => void;
   removeItem: (key: string) => void;
   clearCart: () => void;
@@ -46,11 +46,11 @@ export function OrderingProvider({ children }: { children: React.ReactNode }) {
     return () => { active = false; window.removeEventListener("amala:menu-snapshot", onSnapshot); };
   }, []);
 
-  const addItem = useCallback((itemId: string, quantity = 1, options: string[] = []) => {
+  const addItem = useCallback((itemId: string, quantity = 1, options: string[] = [], openBasket = true) => {
     const item = menu.find(entry => entry.id === itemId);
     if (!item) return false;
     setCart(current => addCartItem(current, item, quantity, options));
-    setCartOpen(true);
+    if (openBasket) setCartOpen(true);
     return true;
   }, [menu]);
   const updateQuantity = useCallback((key: string, delta: number) => {

@@ -69,7 +69,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <nav aria-label="Footer navigation">{links.slice(0, 3).map(link => <Link key={link.href} href={link.href}>{link.label}</Link>)}</nav>
       <small>INDEPENDENT CONCEPT · SAMPLE MENU · NO REAL RESTAURANT FULFILMENT</small>
     </footer>
-    <FoodAssistant onAddItem={(itemId, quantity) => addItem(itemId, quantity)} cart={cart.map(({ itemId, quantity, options }) => ({ itemId, quantity, options }))}/>
+    <FoodAssistant onAddItem={(itemId, quantity, openBasket = true) => addItem(itemId, quantity, [], openBasket)} cart={cart.map(({ itemId, quantity, options }) => ({ itemId, quantity, options }))} menu={menu}/>
     {cartCount > 0 && pathname !== "/checkout" && <Link className="mobile-basket-bar" href="/checkout"><span><ShoppingBag size={17}/> {cartCount} ITEMS</span><strong>{formatNaira(totalKobo)}</strong><b>CHECKOUT ↗</b></Link>}
     {cartOpen && <div className="basket-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) closeBasket(); }}>
       <aside id="shared-basket" ref={basketRef} className="shared-basket" role="dialog" aria-modal="true" aria-labelledby="shared-basket-title">

@@ -5,7 +5,7 @@
 - Food category navigation and data-driven menu.
 - Item descriptions, images, sample prices, availability, and optional modifiers.
 - Search/filter, cart, and demonstration checkout.
-- Typed Gemini assistant and turn-by-turn voice enhancement.
+- Typed Gemini assistant and interruptible Gemini Live voice calls with explicit basket-add confirmation and typed fallback.
 - Clear disclosure that orders are demonstrations, not real restaurant fulfilment.
 
 ## Admin experience
