@@ -120,10 +120,17 @@ function checkMappedImages() {
   const credits = fs.readFileSync(path.join(root, "public/images/menu/ATTRIBUTION.md"), "utf8");
   assert.ok(mapped.length > 0, "expected mapped fallback images");
   for (const item of mapped) {
-    assert.ok(item.image.startsWith("/images/"), `${item.id} image must use a local public path`);
+    assert.ok(item.imageAlt?.trim(), `${item.id} needs image alt text`);
+    if (item.image.startsWith("https://")) {
+      const url = new URL(item.image);
+      const approvedHosts = new Set(["bottleking.ng", "www.supermart.ng", "images.afrizonemart.com", "snapcalorie-webflow-website.s3.us-east-2.amazonaws.com", "potily.com"]);
+      assert.ok(approvedHosts.has(url.hostname), `${item.id} remote image host must be approved`);
+      assert.ok(credits.includes(`| \`${item.id}\` |`), `${item.id} remote image needs a source row`);
+      continue;
+    }
+    assert.ok(item.image.startsWith("/images/"), `${item.id} image must use a local public path or approved HTTPS source`);
     const imagePath = path.join(root, "public", item.image.slice(1));
     assert.ok(fs.existsSync(imagePath), `${item.id} image file is missing`);
-    assert.ok(item.imageAlt?.trim(), `${item.id} needs image alt text`);
     const filename = path.basename(item.image);
     assert.ok(credits.includes(`| \`${filename}\` |`), `${item.id} image needs an attribution row`);
     if (item.id === "ofada" || item.id === "five-alive-berry") {

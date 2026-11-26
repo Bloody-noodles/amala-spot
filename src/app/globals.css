@@ -793,3 +793,107 @@ button,input,textarea,select{font-family:var(--sans)}
   .catalogue .catalogue-copy p { font-size: 16px; }
   .catalogue .catalogue-action { padding-top: 14px; }
 }
+
+
+/* Product-led catalogue cards: every photo is fully visible inside its own frame. */
+.catalogue .catalogue-list {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+  border:0;
+  align-items:stretch;
+}
+.catalogue .catalogue-row {
+  position:relative;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto 1fr auto;
+  gap:0;
+  padding:14px;
+  border:1px solid rgba(64,39,29,.12);
+  border-radius:3px 26px 3px 3px;
+  background:#fffdf9;
+  box-shadow:0 8px 24px rgba(64,39,29,.045);
+}
+.catalogue .catalogue-number {
+  position:absolute;
+  z-index:2;
+  top:25px;
+  left:25px;
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  background:var(--cream);
+  color:var(--brown);
+  font:600 12px var(--sans);
+}
+.catalogue .catalogue-art {
+  grid-column:1;
+  grid-row:1;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  height:auto;
+  aspect-ratio:1.28 / 1;
+  margin:0 0 18px;
+  display:block;
+  overflow:hidden;
+  position:relative;
+  background:#fff;
+  border:1px solid rgba(64,39,29,.10);
+}
+.catalogue .catalogue-art:before,
+.catalogue .catalogue-art:after,
+.catalogue .catalogue-art.has-photo:before {display:none!important}
+.catalogue .catalogue-art.has-photo img,
+.catalogue .catalogue-art.photo-contained img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain!important;
+  object-position:center center!important;
+  padding:14px;
+  box-sizing:border-box;
+  transition:transform .3s ease;
+}
+.catalogue .catalogue-row:hover .catalogue-art img {transform:scale(1.025)}
+.catalogue .catalogue-copy {
+  grid-column:1;
+  grid-row:2;
+  min-width:0;
+  padding:0 4px 18px;
+}
+.catalogue .catalogue-copy .app-kicker {font-size:11px;letter-spacing:.07em}
+.catalogue .catalogue-copy h2 {font-size:clamp(20px,2vw,25px);line-height:1.15;margin:8px 0}
+.catalogue .catalogue-copy p {font-size:16px;line-height:1.5}
+.catalogue .catalogue-action {
+  grid-column:1;
+  grid-row:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:auto;
+  padding:14px 4px 2px;
+  border-top:1px solid rgba(64,39,29,.12);
+}
+.catalogue .catalogue-action strong {font-size:16px}
+.catalogue .catalogue-action button {min-height:48px;padding:13px 16px;font-size:11px}
+@media(max-width:900px) {
+  .catalogue .catalogue-list {grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+}
+@media(max-width:640px) {
+  .catalogue .catalogue-list {grid-template-columns:minmax(0,1fr);gap:18px}
+  .catalogue .catalogue-row {padding:12px}
+  .catalogue .catalogue-art {aspect-ratio:1.38 / 1;margin-bottom:16px}
+  .catalogue .catalogue-art.has-photo img,
+  .catalogue .catalogue-art.photo-contained img {padding:14px}
+  .catalogue .catalogue-number {top:22px;left:22px;width:40px;height:40px}
+  .catalogue .catalogue-copy {padding:0 3px 15px}
+  .catalogue .catalogue-copy h2 {font-size:24px}
+  .catalogue .catalogue-copy p {font-size:17px}
+  .catalogue .catalogue-action {padding-top:14px}
+}
