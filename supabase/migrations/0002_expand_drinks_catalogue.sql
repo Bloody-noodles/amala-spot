@@ -28,7 +28,7 @@ insert into public.menu_items (id,category_id,name,description,price_kobo,is_ava
 ('five-alive-berry','drinks-refreshments','Five Alive Berry Blast','Fruity berry blend from Five Alive.',350000,true),
 ('chivita-active','drinks-refreshments','Chivita Active','Chilled fruit juice blend.',400000,true),
 ('chivita-100','drinks-refreshments','Chivita 100%','Fruit juice with a full-bodied fruit taste.',550000,true),
-('geek-yoghurt','drinks-refreshments','Geek Yoghurt','Chilled, creamy drinking yoghurt.',450000,true),
+('geek-yoghurt','drinks-refreshments','Greek Yoghurt','Chilled, creamy Greek yoghurt.',450000,true),
 ('hollandia-yoghurt','drinks-refreshments','Hollandia Yoghurt','Smooth, chilled yoghurt drink.',500000,true),
 ('drinking-yoghurt','drinks-refreshments','Drinking Yoghurt','Creamy yoghurt drink; flavour depends on the selected option.',350000,true),
 ('almond-drink','drinks-refreshments','Almond Drink','Chilled almond-based beverage.',650000,true),

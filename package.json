@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node tests/menu-catalogue.test.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.23.12",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.35.0",
     "eslint-config-next": "^16.4.3",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "@eslint/eslintrc": "^3.3.1"

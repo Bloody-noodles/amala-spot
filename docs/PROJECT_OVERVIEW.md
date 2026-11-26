@@ -1,15 +1,20 @@
 # Project Overview
 
-Amala Spot is an independent portfolio concept for a premium Nigerian food discovery and demonstration ordering experience. It is not commissioned by or operated by the real-world restaurant that inspired it.
+Amala Spot is an independent Nigerian food discovery and demonstration-ordering concept. It is not operated by the real-world business that inspired it. Catalogue and price data are illustrative unless independently verified.
 
-## Outcomes
-- Recreate the Kaiseki Framer reference with high visual fidelity.
-- Present a broad Nigerian food catalogue, with Yoruba dishes prominently represented.
-- Demonstrate a coherent menu, cart, and validated demo-order workflow.
-- Integrate a Gemini-powered assistant through shared application services.
-- Demonstrate modern full-stack engineering and deployment.
+## Current execution direction
+
+Follow `amala_spot_full_codex_plan.md`: Banh Mi World informs composition and interaction principles; the Amala Spot identity uses warm cream, orange-red, golden yellow, and deep brown. Build distinct home, full menu, about, gallery, checkout, tracking, and admin experiences. Keep the existing Next.js app, Supabase order/menu architecture, Gemini assistant route, and entrance sequence.
 
 ## Boundaries
-Menu items, prices, availability, and business details are sample content until independently verified. The initial product does not process payments or send real orders to a restaurant.
 
-Primary reference: https://kaiseki.framer.website/
+- Demo checkout only; no payment credentials, payment processing, dispatch, or real fulfilment.
+- Never expose server secrets or trust client prices or AI tool arguments.
+- Use integer kobo in storage and server-side order validation.
+- Do not deploy/promote to production without owner approval.
+- Batica Sans is loaded as the display face from `public/fonts/BaticaSans-Regular.otf`; the owner confirmed its site licence.
+- Item-specific verified imagery is required for visual completion. Never imply generic or unverified imagery is item-specific.
+
+## Architecture
+
+One Next.js App Router application. Supabase is the source of truth when configured; static fallback data is illustrative. The public menu API, order creation RPC, private-key order tracking, admin endpoints, and Gemini chat endpoint already exist. Shared client ordering state should connect catalogue actions, assistant suggestions, basket, and checkout.
