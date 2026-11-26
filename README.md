@@ -12,7 +12,7 @@ Menu items, prices, availability, and business details are illustrative unless v
 - Tailwind CSS v4 and custom CSS
 - Supabase PostgreSQL through server-side Next.js route handlers and SQL functions
 - Gemini API through the server-side assistant route
-- Browser Speech Recognition/Synthesis where available, with typed chat fallback
+- Gemini Live voice calls with streamed microphone audio, short-lived server-issued session tokens, and typed chat fallback
 
 ## Local development
 
@@ -24,7 +24,7 @@ The Supabase fallback catalogue is sample data. Supabase credentials and Gemini 
 
 - `BaticaSans-Regular.otf` is loaded as the display face; the owner confirmed its site licence. See `docs/DESIGN_SYSTEM.md`.
 - All 41 fallback menu items have local mapped photos, alt text, and attribution records. Live catalogue completeness and rendered responsive crops still need verification; see `docs/IMAGE_ASSET_AUDIT.md` and `docs/IMPLEMENTATION_STATUS.md`.
-- This workspace lacks Git metadata and a Vercel project link. Browser/mobile Preview inspection, configured Gemini/Supabase journeys, and deployment verification remain outstanding; see `docs/PHASE_AUDIT.md` and `docs/IMPLEMENTATION_STATUS.md`.
+- Voice calls require a configured server-side `GEMINI_API_KEY` and microphone permission in a supported secure browser context. Browser/mobile Preview inspection, configured Gemini/Supabase journeys, and deployment verification remain outstanding; see `docs/PHASE_AUDIT.md` and `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Documentation
 

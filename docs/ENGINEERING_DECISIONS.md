@@ -16,11 +16,18 @@
 - The homepage, menu, and curated gallery use the mapped local photo set. Browser-rendered crop review, the live Supabase catalogue comparison, and configured service journeys remain outstanding; consult `docs/IMPLEMENTATION_STATUS.md` for evidence and limitations.
 - The shared shell, menu, assistant, basket, checkout, tracking, and admin flows remain on the existing application and data architecture. No production deployment or change was made.
 
+## 2026-11-26 â€” Readable type, editorial menu cards, and live voice
+
+- Sinteca Medium/Bold handle interface text and navigation; Batica remains for display headings, with Georgia used selectively for editorial copy. Navigation and actions were enlarged for comfortable scanning.
+- Featured dishes use framed, individually art-directed photo treatments; the full menu uses responsive image cards with clear price and add actions.
+- Voice mode follows the Patisso live-audio pattern: a same-origin rate-limited server route issues a one-use, short-lived Gemini token; the browser streams microphone audio over Gemini Live and returns audio to the visitor. Gemini receives the current menu and can only add exact menu items to the shared sample basket after clear visitor confirmation.
+- Text chat remains available. Voice requires a configured Gemini key, microphone permission, supported secure browser audio APIs, and Gemini Live service availability. No order submission or production deployment was added.
+
 ## Accepted
 - Next.js App Router + TypeScript.
 - Supabase PostgreSQL/Auth.
 - Gemini as AI provider.
-- Turn-by-turn voice with typed fallback.
+- Gemini Live voice calls with typed fallback.
 - Vercel deployment.
 - Single application; no separate backend initially.
 - Demonstration checkout only; no payment gateway or real fulfilment.

@@ -6,7 +6,7 @@
 4. Supabase schema, migrations, and menu services.
 5. Cart and demonstration checkout.
 6. Protected admin dashboard.
-7. Gemini typed and turn-by-turn voice assistant.
+7. Gemini text assistant and live-audio voice concierge with validated shared-basket actions.
 8. Integration, accessibility, security, and responsive QA.
 9. Vercel deployment and portfolio presentation.
 

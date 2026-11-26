@@ -160,9 +160,11 @@ try {
   await assistant.getByRole("button", { name: "Add Amala, Gbegiri & Ewedu to basket" }).click();
   await assistant.getByRole("dialog", { name: "Amala, Gbegiri & Ewedu" }).getByRole("button", { name: /^ADD/ }).click();
   await assistant.getByRole("button", { name: "Close basket" }).click();
-  await assistant.getByRole("button", { name: "Open food assistant" }).click();
+  await assistant.getByRole("button", { name: "Talk to Amala AI" }).click();
   const assistantDialog = assistant.getByRole("dialog", { name: "AMALA AI" });
   await assistantDialog.waitFor({ state: "visible" });
+  await assistantDialog.getByRole("button", { name: "START A VOICE CALL" }).waitFor({ state: "visible" });
+  await assistantDialog.getByRole("button", { name: "Prefer typing? Open text chat" }).click();
   const assistantInput = assistantDialog.getByRole("textbox", { name: "Message Amala AI" });
   assert.equal(await assistantInput.evaluate(element => document.activeElement === element), true, "Opening the assistant should focus its message field");
   await assistantInput.fill("Hi there");
@@ -201,7 +203,7 @@ try {
   await assistant.close();
 
   assert.deepEqual(pageErrors, [], `Preview pages should not raise uncaught errors: ${pageErrors.join("; ")}`);
-  console.log("Preview review passed: responsive overflow, catalogue search/filter, shared basket, demo checkout, assistant launcher, and screenshots.");
+  console.log("Preview review passed: responsive overflow, catalogue search/filter, shared basket, demo checkout, live voice-call entry, typed assistant chat, and screenshots.");
 } finally {
   await browser.close();
 }

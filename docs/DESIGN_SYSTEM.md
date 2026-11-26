@@ -16,13 +16,13 @@ Use cream and white for surfaces, brown for text, and orange-red for primary act
 
 ## Typography
 
-Batica is the display face. The workspace-provided `BaticaSans-Regular.otf` is loaded from `public/fonts/`; the owner confirmed it is licensed for this site. Body copy uses the system sans-serif stack, with Georgia for editorial copy.
+Batica is the expressive display face. Sinteca Medium and Bold, provided in the workspace, carry navigation, controls, labels, and general interface copy for comfortable reading. Georgia adds a restrained editorial contrast in selected descriptions. Body text is at least 15–16 px where space allows; nav and primary controls use 12–13 px, with metadata kept secondary. Keep heading tracking moderate and line-height open.
 
 ## Components and layout
 
 - Shared site header, navigation, footer, and responsive content container.
 - Display headings use strong uppercase editorial hierarchy; body descriptions remain readable and restrained.
-- Catalogue rows/cards prioritize name, description, price, category, and add action. Avoid a uniform grid of generic square food images.
+- Catalogue cards prioritize name, description, price, category, and add action. Use item-matched food photography with an editorial crop, quiet framing, and clear labels instead of isolated unframed thumbnails.
 - Food imagery is item-specific and locally owned/verified. Where no verified image exists, show a neutral labelled placeholder and track it as missing; never silently substitute a category image.
 - Shared assistant launcher/panel and shared basket state belong to the app shell.
 

@@ -92,23 +92,25 @@ function checkEntrySequence() {
 
 function checkAssistantVoiceFlow() {
   const component = fs.readFileSync(path.join(root, "src/components/food-assistant.tsx"), "utf8");
-  assert.ok(component.includes("speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition"), "voice input should support standard and prefixed browser APIs");
-  assert.ok(component.includes("instance.lang = \"en-NG\""), "voice recognition should retain the Nigerian English locale");
-  assert.ok(component.includes("if (voiceRepliesRef.current && \"speechSynthesis\" in window)"), "reply audio must use the latest voice preference after an async response");
-  assert.ok(component.includes("voiceRepliesRef.current = enabled") && component.includes("if (!enabled) window.speechSynthesis?.cancel()"), "turning off spoken replies should cancel audio and prevent pending replies from speaking");
-  assert.ok(component.includes("window.speechSynthesis.speak(new SpeechSynthesisUtterance(answer))"), "assistant replies should remain speakable");
-  assert.ok(component.includes("Microphone access could not start") && component.includes("instance.onerror"), "microphone errors should recover with a typed-input option");
+  const tokenRoute = fs.readFileSync(path.join(root, "src/app/api/assistant/token/route.ts"), "utf8");
+  assert.ok(component.includes("responseModalities: [\"AUDIO\"]") && component.includes("mimeType: \"audio/pcm;rate=16000\""), "voice calls should stream microphone audio and receive live audio replies");
+  assert.ok(component.includes("name: \"add_menu_items_to_basket\"") && component.includes("args.visitorConfirmed !== true"), "live basket actions should require explicit visitor confirmation");
+  assert.ok(component.includes("onAddItem(item.id, quantity)") && component.includes("entry.id === candidate.itemId"), "live basket actions should use exact current menu IDs and the shared basket");
+  assert.ok(component.includes("setMode(\"text\")") && component.includes("Prefer typing? Open text chat"), "typed chat should remain available as a voice fallback");
+  assert.ok(component.includes("streamRef.current?.getTracks().forEach(track => track.stop())"), "ending the call should release the microphone");
+  assert.ok(tokenRoute.includes("origin !== new URL(request.url).origin") && tokenRoute.includes("MAX_CALLS = 5"), "voice token creation should verify same-origin requests and limit attempts");
+  assert.ok(tokenRoute.includes("uses: 1") && tokenRoute.includes("process.env.GEMINI_API_KEY"), "the API key should stay server-side and issue one-use session tokens");
 }
 
 function checkAssistantUsesSharedBasket() {
   const assistant = fs.readFileSync(path.join(root, "src/components/food-assistant.tsx"), "utf8");
   const shell = fs.readFileSync(path.join(root, "src/components/site-shell.tsx"), "utf8");
   const ordering = fs.readFileSync(path.join(root, "src/components/ordering-context.tsx"), "utf8");
-  assert.ok(assistant.includes("onAddItem(item!.id, quantity)"), "assistant suggestions should add through the supplied ordering action");
+  assert.ok(assistant.includes("onAddItem(item.id, quantity)"), "assistant suggestions should add through the supplied ordering action");
   assert.ok(assistant.includes("if (!response.ok) return;") && assistant.includes("try { await setMenuSnapshot();"), "a failed optional menu refresh should not hide a valid assistant reply");
-  assert.ok(assistant.includes("if (!onAddItem(item!.id, quantity))") && assistant.includes("That menu item is no longer available"), "assistant should report when the shared basket rejects an unavailable item");
-  assert.ok(assistant.includes("Added ${quantity} \u00d7 ${item!.name} to your basket"), "assistant should confirm which item it added");
-  assert.ok(shell.includes("<FoodAssistant onAddItem={(itemId, quantity) => addItem(itemId, quantity)}"), "global assistant should receive the shared ordering-provider action");
+  assert.ok(assistant.includes("if (!onAddItem(item.id, quantity))") && assistant.includes("That menu item is no longer available"), "assistant should report when the shared basket rejects an unavailable item");
+  assert.ok(assistant.includes("Added ${quantity} \u00d7 ${item.name} to your basket"), "assistant should confirm which item it added");
+  assert.ok(shell.includes("addItem(itemId, quantity, [], openBasket)") && shell.includes("menu={menu}"), "global assistant should receive the shared menu and ordering-provider action");
   assert.ok(ordering.includes("if (!item) return false;") && ordering.includes("setCart(current => addCartItem(current, item, quantity, options))") && ordering.includes("setCartOpen(true)") && ordering.includes("return true;"), "adding any item should update and reveal the same basket, with success reported to the caller");
   assert.ok(shell.includes("{cartCount > 0 && pathname !== \"/checkout\" && <Link className=\"mobile-basket-bar\" href=\"/checkout\""), "shared basket count and total should route mobile customers to checkout");
 }
@@ -163,13 +165,14 @@ function checkPreviewIsolationAndCoverage() {
   assert.ok(workflow.includes("vercel pull --yes --environment=preview"), "preview workflow must use Preview environment settings");
   assert.ok(workflow.includes("vercel deploy --prebuilt --yes --token"), "preview workflow must deploy prebuilt artifacts");
   assert.doesNotMatch(workflow, /vercel deploy[^\n]*--prod/i, "preview workflow must never deploy to production");
-  assert.ok(workflow.includes("refs/heads/design/banhmi-visual-refresh"), "manual Preview deployment must be limited to the design branch");
+  assert.ok(workflow.includes("refs/heads/codex/amala-spot-upgrade"), "manual Preview deployment must be limited to the current upgrade branch");
   assert.ok(review.includes('assert.equal(base.protocol, "https:", "Preview must use HTTPS")'), "browser review must reject non-HTTPS targets");
   assert.ok(review.includes('base.hostname.endsWith(".vercel.app")'), "browser review must limit targets to Vercel hosts");
   assert.ok(review.includes('assert.notEqual(base.hostname, "amala-spot-site.vercel.app"'), "browser review must reject the known production host");
   assert.ok(review.includes("[320, 390, 768, 1024, 1280, 1440]"), "browser review must cover representative phone, tablet, and desktop widths");
   assert.ok(review.includes('"**/api/orders"') && review.includes('"**/api/assistant/chat"'), "browser review must mock external assistant and order APIs");
   assert.ok(review.includes('"**/api/menu"') && review.includes('".catalogue-art img").count(), 41'), "screenshots should use the sample catalogue and verify all item images");
+  assert.ok(review.includes('name: "Talk to Amala AI"') && review.includes('name: "START A VOICE CALL"') && review.includes('name: "Prefer typing? Open text chat"'), "Preview should verify the live-call entry and typed fallback without requesting microphone access");
   assert.ok(review.includes('".gallery-photo").count(), 27') && review.includes("image.naturalWidth === 0"), "screenshots should verify curated gallery coverage and reject broken images");
   for (const route of ["/", "/menu", "/about", "/gallery", "/checkout", "/track"]) {
     assert.ok(review.includes(`"${route}"`), `browser review must include ${route}`);
@@ -208,7 +211,7 @@ for (const [name, check] of Object.entries({
   "kobo values format to whole naira correctly": checkNairaFormatting,
   "brand and action colors meet their contrast targets": checkContrastTokens,
   "entrance sequence and reduced-motion behavior remain intact": checkEntrySequence,
-  "assistant voice input/output and failure fallback remain available": checkAssistantVoiceFlow,
+  "live assistant voice calls, basket confirmation, and typed fallback": checkAssistantVoiceFlow,
   "assistant suggestions use the shared basket and checkout": checkAssistantUsesSharedBasket,
   "existing local images and alt text": checkMappedImages,
   "every fallback menu item has an approved photo": checkUnmappedImageDisclosure,

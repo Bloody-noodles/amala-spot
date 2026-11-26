@@ -1,5 +1,7 @@
 # Amala Spot implementation audit
 
+> Workspace update (26 November 2026): the initial discovery statements below describe the pre-clone copy. The repository has since been cloned from GitHub, the upgrade is on `codex/amala-spot-upgrade`, and its current base is the public `main` branch. The branch contains the shared storefront upgrade and the follow-up typography, menu-card, and live-voice work.
+
 **Date:** 22 November 2026
 **Scope:** Discovery phase for `amala_spot_full_codex_plan.md`.
 

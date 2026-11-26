@@ -23,7 +23,7 @@ export default function Home() {
 
     <section className="home-note"><span className="app-kicker">GOOD FOOD IS BETTER SHARED</span><h2>PASS THE PLATE.<br/><em>SHARE THE LOVE.</em></h2><Link className="light-action" href="/menu">FIND YOUR NEXT FAVOURITE <ArrowUpRight size={17}/></Link><div aria-hidden className="home-note-stamp">MADE<br/>WITH<br/>HEART</div></section>
 
-    <section className="home-assistant-promo"><div className="assistant-promo-mark">A<span>·</span>I</div><div><span className="app-kicker">A LITTLE HELP CHOOSING?</span><h2>LET’S FIND<br/><em>YOUR CRAVING.</em></h2><p>Ask Amala AI for a recommendation. Add a dish to the same basket you use across the menu.</p></div><p className="assistant-hint">Use the floating “Ask Amala AI” button to chat, or browse the full menu.</p></section>
+    <section className="home-assistant-promo"><div className="assistant-promo-mark">A<span>·</span>I</div><div><span className="app-kicker">A LITTLE HELP CHOOSING?</span><h2>LET’S FIND<br/><em>YOUR CRAVING.</em></h2><p>Talk it through with Amala AI. Get a recommendation and add it to your sample basket when you’re ready.</p></div><p className="assistant-hint">Tap “Talk to Amala” for a live voice call, or browse the full menu.</p></section>
 
     <section className="home-contact"><span className="app-kicker">04 / PULL UP A CHAIR</span><h2>SEE YOU<br/><em>AT THE TABLE.</em></h2><Link className="primary-link" href="/menu">EXPLORE THE MENU <ArrowUpRight size={16}/></Link></section>
   </main></SiteEntry>;
