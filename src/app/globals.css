@@ -559,3 +559,30 @@ button,input,textarea,select{font-family:var(--sans)}
   .receipt-key>b,.receipt-key small{font-size:11px}
 }
 
+
+
+/* Catalogue image system: complete item photography sits inside a consistent frame. */
+.catalogue-art.has-photo {
+  min-height: 0;
+  height: clamp(150px, 18vw, 220px);
+  aspect-ratio: 4 / 3;
+  padding: 12px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #eee5d8;
+}
+.catalogue-art.has-photo img {
+  object-fit: contain;
+  object-position: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+@media (max-width: 640px) {
+  .catalogue-art.has-photo {
+    height: 118px;
+    padding: 6px;
+  }
+  .catalogue-art.has-photo img {
+    padding: 6px;
+  }
+}
