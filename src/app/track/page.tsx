@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Circle, Clock3, Search, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Circle, Clock3, Search, ShieldCheck } from "lucide-react";
 
 type Event = { status: string; note: string | null; created_at: string };
 type Order = { reference: string; status: string; totalKobo: number; createdAt: string; items: { item_name: string; quantity: number; line_total_kobo: number }[]; events: Event[] };
@@ -41,7 +40,6 @@ export default function TrackOrderPage() {
 
   const currentIndex = order ? stages.indexOf(order.status) : -1;
   return <main className="tracking-page">
-    <header className="tracking-header"><Link className="wordmark" href="/">AMALA<span>SPOT</span><i>®</i></Link><Link href="/" className="tracking-back"><ArrowLeft size={15}/> BACK TO SITE</Link></header>
     <section className="tracking-main">
       <span className="eyebrow">ORDER LOOKUP · PRIVATE ACCESS</span>
       <h1>YOUR ORDER.<br/><em>IN THE KNOW.</em></h1>

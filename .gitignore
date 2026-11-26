@@ -5,8 +5,10 @@ dist
 build
 coverage
 .vercel
+preview-review/
 .env
 .env.*
 !.env.example
 .DS_Store
 *.log
+*.tsbuildinfo

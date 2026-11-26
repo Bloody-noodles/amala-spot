@@ -1,11 +1,13 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import reactHooks from "eslint-plugin-react-hooks";
 
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    plugins: { "react-hooks": reactHooks },
     rules: {
       // Existing client components intentionally hydrate browser-only capabilities
       // and fetch initial dashboard data after mount.

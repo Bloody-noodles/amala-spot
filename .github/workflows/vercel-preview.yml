@@ -1,0 +1,90 @@
+name: Vercel Preview
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build and deploy Preview only
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/design/banhmi-visual-refresh') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'design/banhmi-visual-refresh')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify Vercel secrets are configured
+        run: |
+          test -n "$VERCEL_TOKEN" || { echo "Missing VERCEL_TOKEN repository secret."; exit 1; }
+          test -n "$VERCEL_ORG_ID" || { echo "Missing VERCEL_ORG_ID repository secret."; exit 1; }
+          test -n "$VERCEL_PROJECT_ID" || { echo "Missing VERCEL_PROJECT_ID repository secret."; exit 1; }
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Link the existing Vercel project
+        run: vercel link --yes --project "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
+
+      - name: Pull Preview settings
+        run: vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Run source quality checks
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Build Preview artifacts
+        run: vercel build --token "$VERCEL_TOKEN"
+
+      - name: Deploy Preview only
+        id: deploy
+        run: |
+          deployment_url="$(vercel deploy --prebuilt --yes --token "$VERCEL_TOKEN")"
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $deployment_url"
+          curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 "$deployment_url/" -o /dev/null
+          echo "**Preview URL:** $deployment_url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install browser for Preview review
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Review responsive Preview and ordering journey
+        run: node scripts/preview-review.mjs
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+
+      - name: Upload Preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: amala-spot-preview-review
+          path: preview-review/*.png
+          if-no-files-found: warn
+          retention-days: 7

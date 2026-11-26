@@ -1,7 +1,7 @@
 # Product Requirements
 
 ## Public experience
-- Responsive homepage faithfully recreating the Kaiseki reference.
+- Responsive Amala Spot experience informed by Banh Mi World's hierarchy and image presentation, without copying its identity or content.
 - Food category navigation and data-driven menu.
 - Item descriptions, images, sample prices, availability, and optional modifiers.
 - Search/filter, cart, and demonstration checkout.
