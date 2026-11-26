@@ -19,7 +19,7 @@ type OrderingContextValue = {
   itemTotal: (line: CartLine) => number;
 };
 const OrderingContext = createContext<OrderingContextValue | null>(null);
-const curatedImageIds = new Set(["five-alive-pulpy", "drinking-yoghurt", "bottled-water", "geek-yoghurt", "kunu", "tiger-nut-drink"]);
+const curatedImageIds = new Set(["five-alive-pulpy", "five-alive-berry", "hollandia-yoghurt", "fanta-orange", "fanta-can", "coca-cola", "coca-cola-can", "chivita-100", "zobo", "7up-can", "sprite", "sprite-can", "tiger-nut-drink", "drinking-yoghurt", "bottled-water", "geek-yoghurt", "kunu"]);
 const withLocalImages = (items: MenuItem[]) => items.map(item => {
   const fallback = fallbackMenu.find(entry => entry.id === item.id && entry.image);
   const localImage = item.id.toLowerCase().includes("ekuru") || item.name.toLowerCase().includes("ekuru")
