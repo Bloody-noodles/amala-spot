@@ -62,3 +62,17 @@ The following menu images are loaded from their original product/photo hosts bec
 | `geek-yoghurt` | Greek yoghurt bowl with fruit and honey | [SnapCalorie photo](https://www.snapcalorie.com/nutrition/greek_yoghurt_low-fat_nutrition.html) |
 | `kunu` | Nigerian millet kunu in bottles and a glass | [SnapCalorie photo](https://www.snapcalorie.com/nutrition/millet_drink_kunu_nutrition.html) |
 | `tiger-nut-drink` | Full tiger-nut drink bottle | [Potily product listing](https://potily.com/products/tiger-nut-drink) |
+
+| `hollandia-yoghurt` | Hollandia Yoghurt | Margaret Africa product listing | [Hollandia yoghurt carton image](https://margaretafrica.com/cdn/shop/files/IMG-0174.jpg?v=1757523752&width=1445) |
+| `five-alive-berry` | Five Alive Berry Blast | BottleKing product listing | [Five Alive Berry Blast bottle](https://bottleking.ng/_next/image?q=75&url=https%3A%2F%2Fdnk1kazq09utu.cloudfront.net%2Fproduct-5-alive-berry-juice-1763044277698.png&w=3840) |
+| `five-alive-pulpy` | Five Alive Pulpy | BottleKing product listing | [Five Alive Pulpy bottle](https://bottleking.ng/_next/image?q=75&url=https%3A%2F%2Fdnk1kazq09utu.cloudfront.net%2Fproduct-5-alive-pulpy-1763044662856.png&w=2048) |
+| `fanta-orange` | Fanta Orange | Supermart Nigeria product listing | [Fanta Orange bottle](https://www.supermart.ng/cdn/shop/files/OkeA3850.jpg?v=1689112715&width=480) |
+| `fanta-can` | Fanta Orange Can | Weststrate product listing | [Fanta Orange can](https://weststrate.nl/media/media_cached/1x1_white/a/8/8/b/frisdrank-fanta-orange-blik-330ml-284960--0.jpg) |
+| `coca-cola` | Coca-Cola | Salvo product listing | [Coca-Cola glass bottle](https://salvo1968.co.uk/media/catalog/product/cache/2dc09fb3877045b36046bddd99631d98/i/c/iconbottles_cocacola33cl_main_image.jpg) |
+| `coca-cola-can` | Coca-Cola Can | DrinkSupermarket product listing | [Coca-Cola 330ml can](https://www.drinksupermarket.com/media/catalog/product/c/o/coca-cola-original-24x-330ml-can_temp.jpg) |
+| `chivita-100` | Chivita 100% | Next Cash & Carry product listing | [Chivita 100% carton](https://nextcashandcarry.com.ng/wp-content/uploads/2022/10/chivita-orange.jpeg) |
+| `zobo` | Chilled Zobo | Shalom African Foods product listing | [Bottled zobo drink](https://shalomafricanfoods.ca/storage/2025/01/5963-580x580.jpg) |
+| `7up-can` | 7UP Can | Bestway Wholesale product listing | [7UP 330ml can](https://www.bestwaywholesale.co.uk/img/products/T913/1000/1/4062139017911.jpg) |
+| `sprite` | Sprite | Coca-Cola brand website | [Sprite bottle](https://www.coca-cola.com/content/dam/onexp/pe/es/brands/sprite/sprite.png) |
+| `sprite-can` | Sprite Can | Coca-Cola brand website | [Sprite can](https://www.coca-cola.com/content/dam/onexp/mm/my/brands/sprite/myanmar_sprite_250ml_product_1100x1100%20%281%29.jpg) |
+| `tiger-nut-drink` | Tiger-Nut Milk | Lochids Foods product listing | [Tiger nut milk bottle](https://lochidsfoods.com/storage/products/01KTX65E1SPJ8J5Y99NWEAD5DR.png) |
