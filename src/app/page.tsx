@@ -9,7 +9,7 @@ export default function Home() {
   return <SiteEntry><main className="home-page">
     <section className="home-hero">
       <div className="home-hero-copy"><span className="app-kicker">NIGERIAN FOOD · MADE FOR THE TABLE</span><h1>GOOD FOOD.<br/><em>GOOD PEOPLE.</em><br/>GOOD TIMES.</h1><p>Yoruba roots, Nigerian soul, and a seat for everybody. Find something that feels like home.</p><Link className="primary-link" href="/menu">EXPLORE THE MENU <ArrowUpRight size={16}/></Link></div>
-      <div className="home-hero-art" aria-label="Amala Spot brand illustration"><div className="home-art-circle"><span>ROOTED IN</span><b>FLAVOUR</b><i>SHARED WITH LOVE</i></div><div className="home-art-index">AS / 001<br/>FROM NAIJA, WITH HEART</div><span className="home-art-spark" aria-hidden>✳</span></div>
+      <div className="home-hero-art" aria-label="Amala, ewedu, gbegiri and obe ata"><div className="home-hero-photo"><Image src="/images/home/abula-hero.jpg" alt="Amala served with ewedu, gbegiri and rich obe ata stew." fill priority sizes="(max-width: 640px) 100vw, 50vw"/></div><div className="home-art-index">AMALA · EWEDU · GBEGIRI<br/>A TASTE OF HOME</div></div>
       <a className="home-scroll" href="#signature"><span>SCROLL TO EXPLORE</span><ArrowDown size={15}/></a>
     </section>
 
