@@ -493,3 +493,18 @@ button,input,textarea,select{font-family:var(--sans)}
 }
 @media(prefers-reduced-motion:reduce){.assistant-call-orb.status-listening{animation:none}.home-featured-image img,.catalogue-art img{transition:none}}
 @media(max-width:640px){.home-gallery-teaser .gallery-teaser-art{height:320px;grid-template-columns:1fr .82fr;gap:8px}.gallery-teaser-photo figcaption{padding:34px 8px 9px}.gallery-teaser-photo figcaption .app-kicker{font-size:6px}.gallery-teaser-photo figcaption strong{font-size:12px}}
+
+/* Gallery photos use a consistent, responsive card grid instead of fixed row spans. */
+.gallery-collection{width:min(100%,1600px);margin:0 auto;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:auto;gap:clamp(16px,2vw,28px);padding:12px var(--gutter) 64px}
+.gallery-photo,.gallery-photo-1,.gallery-photo-2,.gallery-photo-3,.gallery-photo-4{grid-column:auto;grid-row:auto;display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid #40271d18;border-radius:4px 28px 4px 4px;background:#fffdf8;box-shadow:0 10px 30px #40271d0b;transition:transform .25s ease,box-shadow .25s ease}
+.gallery-photo:hover{transform:translateY(-4px);box-shadow:0 18px 38px #40271d18}
+.gallery-photo-frame{width:100%;min-height:0;aspect-ratio:4/3;overflow:hidden;background:#e7d8c2}
+.gallery-photo-frame img{object-fit:cover;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.gallery-photo:hover .gallery-photo-frame img{transform:scale(1.045)}
+.gallery-photo figcaption{flex:1;min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 17px}
+.gallery-photo figcaption .app-kicker{color:#765e47;font-size:9px}
+.gallery-photo figcaption strong{max-width:68%;font:600 16px/1.2 var(--sans);letter-spacing:-.025em;text-align:right}
+.gallery-teaser-photo{border:1px solid #40271d20;border-radius:3px 24px 3px 3px;box-shadow:0 12px 30px #40271d18}
+.gallery-teaser-photo figcaption strong{font-weight:600}
+@media(max-width:900px){.gallery-collection{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.gallery-collection{grid-template-columns:1fr;gap:18px;padding:0 20px 42px}.gallery-photo-frame{aspect-ratio:4/3}.gallery-photo figcaption{min-height:68px;padding:13px 15px}.gallery-photo figcaption strong{font-size:15px}.gallery-footnote{align-items:flex-start;flex-direction:column;gap:10px;padding:8px 20px 55px}}

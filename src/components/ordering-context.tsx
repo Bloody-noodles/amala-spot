@@ -21,6 +21,10 @@ type OrderingContextValue = {
 const OrderingContext = createContext<OrderingContextValue | null>(null);
 const withLocalImages = (items: MenuItem[]) => items.map(item => {
   const fallback = fallbackMenu.find(entry => entry.id === item.id && entry.image);
+  const localImage = item.id.toLowerCase().includes("ekuru") || item.name.toLowerCase().includes("ekuru")
+    ? "/images/menu/ekuru.jpg"
+    : undefined;
+  if (localImage) return { ...item, image: localImage, imageAlt: item.imageAlt ?? "Ekuru served as a traditional Nigerian bean dish." };
   return fallback ? { ...item, image: item.image ?? fallback.image, imageAlt: item.imageAlt ?? fallback.imageAlt } : item;
 });
 
