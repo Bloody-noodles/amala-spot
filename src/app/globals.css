@@ -517,3 +517,45 @@ button,input,textarea,select{font-family:var(--sans)}
 .home-hero-art:after{content:"";position:absolute;z-index:1;inset:12px;pointer-events:none;border-radius:2px 29px 2px 2px;background:linear-gradient(180deg,transparent 54%,#1f130da8)}
 .home-art-index{z-index:2;right:auto;left:30px;bottom:30px;padding:11px 14px;background:#fffdf0;color:var(--brown);font:600 10px/1.55 var(--sans);letter-spacing:.045em;text-align:left}
 @media(max-width:640px){.home-hero-art{min-height:clamp(330px,115vw,480px);margin-bottom:12px}.home-art-index{left:24px;bottom:24px}}
+
+/* Readability pass: basket and checkout microcopy */
+.shared-basket-lines article small{font-size:12px;line-height:1.55}
+.shared-basket-lines article strong{font-size:13px}
+.shared-basket-lines article>section span,.shared-basket-lines article>section output{font-size:13px}
+.shared-basket-lines article>section .shared-remove{font-size:11px;padding:0 12px}
+.shared-basket-total{font-size:12px;line-height:1.5}
+.shared-demo-note{font-size:11px;line-height:1.65}
+.shared-checkout-link{font-size:12px}
+.checkout-lines article p{font-size:14px;line-height:1.5}
+.checkout-lines article strong{font-size:13px}
+.checkout-line-actions span{font-size:13px}
+.checkout-total{font-size:12px}
+.checkout-form label{font-size:11px;line-height:1.4}
+.checkout-form>small{font-size:11px;line-height:1.6}
+.checkout-summary{font-size:12px}
+.receipt-key>b,.receipt-key small{font-size:11px;line-height:1.5}
+.receipt-key code{font-size:12px}
+@media(max-width:640px){
+  .shared-basket{padding:20px}
+  .shared-basket-lines article{padding:19px 0}
+  .shared-basket-lines article b{font-size:15px;line-height:1.35}
+  .shared-basket-lines article small{font-size:12px}
+  .shared-basket-lines article strong{font-size:13px}
+  .shared-basket-lines article>section{gap:12px}
+  .shared-basket-lines article>section span,.shared-basket-lines article>section output{font-size:14px}
+  .shared-basket-lines article>section .shared-remove{font-size:11px}
+  .shared-basket-total{font-size:12px;padding:20px 0}
+  .shared-basket-total strong{font-size:22px}
+  .shared-demo-note{font-size:11px;line-height:1.65}
+  .shared-checkout-link{font-size:12px;min-height:48px}
+  .mobile-basket-bar span,.mobile-basket-bar b{font-size:10px}
+  .mobile-basket-bar strong{font-size:14px}
+  .checkout-lines article p{font-size:14px}
+  .checkout-lines article strong{font-size:13px}
+  .checkout-line-actions span{font-size:14px}
+  .checkout-form label{font-size:11px}
+  .checkout-form>small{font-size:11px;line-height:1.6}
+  .checkout-summary{font-size:12px}
+  .receipt-key>b,.receipt-key small{font-size:11px}
+}
+
