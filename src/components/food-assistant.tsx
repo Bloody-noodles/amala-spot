@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUp, Bot, Mic, Phone, PhoneOff, Plus, Sparkles, Type, X } from "lucide-react";
+import { ArrowUp, Bot, Phone, PhoneOff, Plus, Type, X } from "lucide-react";
 import { formatNaira, type MenuItem } from "@/lib/menu";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -411,7 +411,7 @@ export function FoodAssistant({
     {open && <section ref={panelRef} id="food-assistant-panel" className={`food-assistant-panel${mode === "voice" ? " is-voice-mode" : ""}`} role="dialog" aria-modal="false" aria-labelledby="food-assistant-title">
       <header className="food-assistant-header"><div className="food-assistant-avatar"><Bot size={20}/></div><div><b id="food-assistant-title">AMALA AI</b><small>{mode === "voice" ? "YOUR LIVE FOOD CONCIERGE" : "YOUR FOOD-FINDING SIDEKICK"}</small></div><span className={`assistant-live-dot${activeCall ? " is-active" : ""}`}/><button onClick={() => { stopCall(); setOpen(false); launcherRef.current?.focus(); }} aria-label="Close assistant"><X size={18}/></button></header>
       {mode === "voice" ? <div className="assistant-call-view">
-        <div className="assistant-call-copy"><span className="app-kicker">THE AMALA TABLE</span><h2>A little chat<br/><em>over good food.</em></h2><p>Tell me what you're in the mood for. I'll help you pick, and add it to your demo basket when you're ready.</p></div>
+        <div className="assistant-call-copy"><span className="app-kicker">THE AMALA TABLE</span><h2>A little chat<br/><em>over good food.</em></h2><p>Tell me what you&apos;re in the mood for. I&apos;ll help you pick, and add it to your demo basket when you&apos;re ready.</p></div>
         <div className={`assistant-call-orb status-${callStatus}`} style={{ "--voice-level": voiceLevel } as React.CSSProperties} aria-hidden="true"><span><Bot size={31}/></span><i/><b/></div>
         <p className="assistant-call-status" aria-live="polite">{statusLabel}</p>
         {error && <p className="food-assistant-error" role="alert">{error}</p>}
