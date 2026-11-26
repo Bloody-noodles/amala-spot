@@ -804,6 +804,7 @@ button,input,textarea,select{font-family:var(--sans)}
   align-items:stretch;
 }
 .catalogue .catalogue-row {
+  position:relative;
   min-width:0;
   display:grid;
   grid-template-columns:minmax(0,1fr);
