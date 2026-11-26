@@ -48,3 +48,17 @@ Most images are included under Creative Commons Attribution-ShareAlike 4.0 Inter
 | `five-alive-berry.jpg` | Five Alive Berry Blast (`five-alive-berry`) | Site owner (ownership confirmed by owner) | Owner-provided photo; user confirmed ownership and approved use on this site on 26 November 2026; downloaded from Pinterest, original pin URL not supplied; re-encoded at the original 736 × 1,308 dimensions as optimized progressive JPEG (quality 88); displayed with `object-fit: contain` to preserve both bottles |
 
 License text: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), [CC BY-SA 3.0 Unported](https://creativecommons.org/licenses/by-sa/3.0/), [CC BY-SA 2.0 Generic](https://creativecommons.org/licenses/by-sa/2.0/), and [CC BY 2.0 Generic](https://creativecommons.org/licenses/by/2.0/). Source pages provide the authorship and licensing details. Open Food Facts product images are licensed under its Creative Commons Attribution ShareAlike terms. Review the source and product packaging alongside local trademark and advertising requirements before commercial use.
+
+
+## Curated remote product images
+
+The following menu images are loaded from their original product/photo hosts because the previous local files did not meet the requested product presentation. Their source pages are retained here for traceability; verify redistribution rights before using these images for a commercial restaurant deployment.
+
+| Menu item ID | Source image | Source page |
+| --- | --- | --- |
+| `five-alive-pulpy` | Full 5 Alive Pulpy Orange 85 cl bottle | [BottleKing product listing](https://bottleking.ng/product/5-alive-pulpy-juice-1l) |
+| `drinking-yoghurt` | Blue Boat Fresh Yo strawberry drinking yoghurt bottle | [Supermart product image](https://www.supermart.ng/collections/milk-yoghurt-drinks?page=6) |
+| `bottled-water` | Full Eva 75 cl still water bottle | [AfrizoneMart product listing](https://afrizonemart.com/product/eva-premium-bottled-water-75cl) |
+| `geek-yoghurt` | Greek yoghurt bowl with fruit and honey | [SnapCalorie photo](https://www.snapcalorie.com/nutrition/greek_yoghurt_low-fat_nutrition.html) |
+| `kunu` | Nigerian millet kunu in bottles and a glass | [SnapCalorie photo](https://www.snapcalorie.com/nutrition/millet_drink_kunu_nutrition.html) |
+| `tiger-nut-drink` | Full tiger-nut drink bottle | [Potily product listing](https://potily.com/products/tiger-nut-drink) |
